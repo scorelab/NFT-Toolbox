@@ -1,6 +1,9 @@
-import fs = require("fs");
-import path = require("path");
-import canvas = require("canvas");
+import fs from "fs";
+import path from "path";
+import canvas from "canvas";
+import { ProgressBar } from "../helpers/ProgressBar";
+
+const DNA_DELIMITER = '+';
 
 interface LayerInput{
     name:string;
@@ -25,7 +28,6 @@ export interface LayerSchema{
     rarityDelimiter:string,
     rarityDefault:string,
     shuffleIndexes:boolean,
-    debugLogs:boolean
 }
 interface CollectionAttributes{
     name:string;
@@ -56,7 +58,6 @@ interface Metadata{
     attributes:MetadataAttribute[];
 }
 
-
 export class Collection{
     name:string;
     dir:fs.PathLike;
@@ -80,36 +81,43 @@ export class Collection{
         this.extraMetadata = data;
     }
     setSchema(schema:LayerSchema){
+        // Function to recursively read images in a Layer directory and return array of Elements
         const getElements = (dir:fs.PathLike, rarityDelimiter:string) => {
+            
+            // Functions for extracting name and rarity weight from file name
+            // File name is of the form "{name} rarityDelimiter {rarityWeight} . {extension}"
             const cleanName = (str:string) => str.split('.').shift()?.split(rarityDelimiter).shift();
             const rarityWeight = (str:string) => str.split('.').shift()?.split(rarityDelimiter).pop();
             
             return fs
-                .readdirSync(dir)
-                .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
-                .map((i, index) => {
-                    if (i.includes("-")) {
-                        throw new Error(`File name can not contain dashes, please fix: ${i}`);
-                    }
-                    let eleName = cleanName(i);
-                    if( !eleName ){
-                        throw new Error(`Error in loading File ${i}`);
-                    }
-                    let eleWeight = i.includes(schema.rarityDelimiter) ? rarityWeight(i) : schema.rarityDefault;
-                    if ( !eleWeight ){
-                        throw new Error(`Error in loading File ${i}`);
-                    }
-                    let element:LayerElement = {
-                        id: index,
-                        name: eleName,
-                        filename: i,
-                        path: path.join(dir.toString(), i),
-                        weight: parseInt(eleWeight)
-                    }
-                    //console.log("DEBUG element", element);
-                    return element;
-                });
+            .readdirSync(dir)
+            .filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
+            .map((i, index) => {
+                //Parsing File name
+                if (i.includes(DNA_DELIMITER)) {
+                    throw new Error(`File name can not contain "${DNA_DELIMITER}", please fix: ${i}`);
+                }
+                let eleName = cleanName(i);
+                if( !eleName ){
+                    throw new Error(`Error in loading File ${i}`);
+                }
+                let eleWeight = i.includes(schema.rarityDelimiter) ? rarityWeight(i) : schema.rarityDefault;
+                if ( !eleWeight ){
+                    throw new Error(`Error in loading File ${i}`);
+                }
+
+                // Creating Element
+                let element:LayerElement = {
+                    id: index,
+                    name: eleName,
+                    filename: i,
+                    path: path.join(dir.toString(), i),
+                    weight: parseInt(eleWeight)
+                }
+                return element;
+            });
         }
+        // Creating Layers array
         const layers:Layer[] = schema.layersOrder.map((layerObj, index) => {
             let dir = layerObj.dir ? layerObj.dir : path.join(schema.dir.toString(), layerObj.name);
             let elements = getElements(dir, schema.rarityDelimiter);
@@ -124,44 +132,26 @@ export class Collection{
                 totalWeight: totalWeight
             };
         })
-        console.log("DEBUG layers", layers);
+
+        // Updating Collection attributes
         this.schema = schema;
         this.layers = layers;
     }
 
     async generate(){
+        // Making empty directory for generated NFTs
         if(!this.schema || !this.layers){
             throw new Error("Schema required for generating NFTs");
         }
         if (fs.existsSync(this.dir)) {
-            fs.rmdirSync(this.dir, {recursive:true});
+            fs.rmSync(this.dir, {recursive:true});
         }
         fs.mkdirSync(this.dir);
         fs.mkdirSync(`${this.dir}/metadata`);
         fs.mkdirSync(`${this.dir}/assets`);
-
-        let indexCount:number = 1;
-        let failedCount:number = 0;
-        let abstractedIndexes:number[] = [];
-
-        for (let i=1; i <= this.schema.size; i++) {
-            abstractedIndexes.push(i);
-        }
-
-        const shuffle = (array:number[]) => {
-            for (let i = array.length - 1; i > 0; i--) {
-              let j = Math.floor(Math.random() * (i + 1));
-              [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-        if (this.schema.shuffleIndexes) {
-            shuffle(abstractedIndexes);
-        }
-        this.schema.debugLogs
-            ? console.log("Assets left to create: ", abstractedIndexes)
-            : null;
         
-        const DNA_DELIMITER = '-';
+        // Helper Functions for generation
+        // Creates a random DNA of element indexes based on rarity weights
         const createDna = (layers:Layer[]) => {
             let randomElementIds:number[] = [];
             layers.forEach((layer) => {
@@ -176,11 +166,14 @@ export class Collection{
             });
             return randomElementIds.join(DNA_DELIMITER);
         };
+
+        // Checks if DNA is already generated
         const isDnaUnique = (_dnaList:Set<string>, _dna:string) => {
             return !_dnaList.has(_dna);
         };
+
+        // Selects elements for each layer based on DNA
         const selectElements = (_dna:string, _layers:Layer[]) => {
-            //console.log("DEBUG DNA", _dna, "\n");
             let mappedDnaToLayers = _layers.map((layer, index) => {
                 let selectedElement:LayerElement|undefined = layer.elements.find(
                   (e) => (e.id.toString() == _dna.split(DNA_DELIMITER)[index])
@@ -192,6 +185,7 @@ export class Collection{
               });
               return mappedDnaToLayers;
         };
+
         const loadImage = async (element:LayerElement) => {
             try {
               return new Promise<canvas.Image>(async (resolve) => {
@@ -202,56 +196,79 @@ export class Collection{
               console.error(`Error loading image ${element.path}:`, error);
             }
         };
+
         const saveImage = (_index:number) => {
             fs.writeFileSync(`${this.dir}/assets/${_index}.png`, canvasInstance.toBuffer("image/png"));
         };
-        const addMetadata = (_index:number) => {
-            let dateTime = Date.now();
+
+        // Returns metadata in OpenSea format to matadataList variable
+        const getMetadata = (_index:number) => {
             let tempMetadata:Metadata = {
                 name: `${this.name} #${_index}`,
                 description: this.description,
                 image: `${this.baseURL}/${_index}.png`,
-                attributes: attributesList,
+                attributes: attributesList,     // Dynamic list maintained in the Generation Loop
                 ...this.extraMetadata
             };
-            metadataList.push(tempMetadata);
             return tempMetadata;
         }
+
         const saveMetadata = (metadata:Metadata, _index:number) => {
             fs.writeFileSync(`${this.dir}/metadata/${_index}.json`, JSON.stringify(metadata, null, 2));
         };
 
-        var dnaList = new Set<string>();
+        const shuffle = (array:number[]) => {
+            for (let i = array.length - 1; i > 0; i--) {
+              let j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Initializations
+        let indexCount:number = 1;
+        let failedCount:number = 0;
+        let abstractedIndexes:number[] = [];        // Ordered array of indexes to be created
+
+        for (let i=1; i <= this.schema.size; i++) {
+            abstractedIndexes.push(i);
+        }
+        if (this.schema.shuffleIndexes) {
+            shuffle(abstractedIndexes);
+        }
+
+        const progressBar = new ProgressBar("Generating NFTs", this.schema.size);
+        progressBar.init();
 
         const canvasInstance = canvas.createCanvas(this.schema.format.width, this.schema.format.height);
         const ctx = canvasInstance.getContext("2d");
         ctx.imageSmoothingEnabled = this.schema.format.smoothing;
 
-        var metadataList:Metadata[] = [];
-        var attributesList:MetadataAttribute[] = [];
+        var dnaList = new Set<string>();                //List of all DNAs created so far
+        var attributesList:MetadataAttribute[] = [];    //List of attributes added to an NFT, cleared in every iteration
 
+        // Generation Loop
         while (indexCount <= this.schema.size) {
+            // Creating new DNA
             let newDna = createDna(this.layers);
-            //console.log("DEBUG DNA", newDna);
-            if (isDnaUnique(dnaList, newDna)) {
-                let selectedElements:LayerElement[] = selectElements(newDna, this.layers);
-                //console.log("DEBUG", selectedElements);
 
+            // Creating NFT for DNA, if not done already
+            if (isDnaUnique(dnaList, newDna)) {
+                // Loading Elements
+                let selectedElements:LayerElement[] = selectElements(newDna, this.layers);
                 let loadedImages:Promise<canvas.Image|undefined>[] = [];
-          
                 selectedElements.forEach((element) => {
                     loadedImages.push(loadImage(element));
                 });
-          
+                
+                // Rendering Images
                 await Promise.all(loadedImages).then((renderImageArray) => {
                     if(!this.schema || !this.layers){
                         throw new Error("Schema not found");
                     }
                     
-                    this.schema.debugLogs ? console.log("Clearing canvas") : null;
-
+                    // Clearing Canvas
                     ctx.clearRect(0, 0, this.schema.format.width, this.schema.format.height);
-                    
+                    // Adding Background, if specified
                     if (this.schema.background.generate) {
                         if(this.schema.background.static){
                             if( !this.schema.background.default ){
@@ -265,38 +282,43 @@ export class Collection{
                         
                         ctx.fillRect(0, 0, this.schema.format.width, this.schema.format.height);
                     }
-
+                    // Adding Layer Elements
                     renderImageArray.forEach((img, index) => {
                         if(!this.schema || !this.layers){
                             throw new Error("Schema not found");
                         }
                         ctx.drawImage(img, 0, 0, this.schema.format.width, this.schema.format.height);
+                        // Saving attribute for metadata
                         attributesList.push({
                             trait_type: this.layers[index].name,
                             value: selectedElements[index].name,
                         });
                     });
                     
-                    this.schema.debugLogs ? console.log("Editions left to create: ", abstractedIndexes) : null;
-                    
+                    // Saving NFT image and Metadata
                     saveImage(abstractedIndexes[0]);
-                    let meta = addMetadata(abstractedIndexes[0]);
+                    let meta = getMetadata(abstractedIndexes[0]);
                     saveMetadata(meta, abstractedIndexes[0]);
                     //console.log(`Created index: ${abstractedIndexes[0]}, with DNA: ${newDna}`);
                 });
-                  
+                
+                // Initializing for next iteration
                 attributesList = [];
                 dnaList.add(newDna);
-                indexCount++;
                 abstractedIndexes.shift();
+
+                progressBar.update(indexCount);
+                indexCount++;
+                
             } else {
-                //console.log("DNA exists!");
+                // DNA has already been generated
                 failedCount++;
                 if (failedCount >= this.schema.dnaCollisionTolerance) {
                     throw new Error(`DNA Tolerance exceeded. More layers or elements are requierd to generate ${this.schema.size} images`);
                 }
             }
         }
-        console.log(`\n${this.schema.size} NFTs generated for ${this.name} in ${this.dir}\n`)
+        // Generation Complete
+        console.log(`\n${this.schema.size} NFTs generated for ${this.name} in ${this.dir}`)
     }
 }

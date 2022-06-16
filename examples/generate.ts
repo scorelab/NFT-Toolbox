@@ -3,7 +3,7 @@ import { nftToolbox } from '../src/index';
 
 nftToolbox.initCollection({
     name:"Demo Collection",
-    dir: `${__dirname}/collection/`,
+    dir: path.join(__dirname, "Demo Collection"),
     description: "This is a demo collection for NFT Toolbox"
 })
 
@@ -29,5 +29,4 @@ nftToolbox.generateNFTs({
     rarityDelimiter: "#",
     rarityDefault: "1",
     shuffleIndexes: true,
-    debugLogs: false
 })
