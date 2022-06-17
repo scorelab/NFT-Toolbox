@@ -63,10 +63,10 @@ export class Collection {
 	dir: fs.PathLike;
 	description: string = "";
 
-	protected baseURL: string = "ipfs:/";
-	protected extraMetadata: object = {};
-	protected schema?: LayerSchema = undefined;
-	protected layers?: Layer[] = undefined;
+	baseURL: string = "ipfs:/";
+	extraMetadata: object = {};
+	schema?: LayerSchema = undefined;
+	layers?: Layer[] = undefined;
 
 	constructor(attributes: CollectionAttributes) {
 		this.name = attributes.name;
@@ -74,6 +74,46 @@ export class Collection {
 		this.dir = attributes.dir;
 	}
 
+	// Functions to access file system
+	initializeDir() {
+		// Making empty directory for generated NFTs
+		if (!this.schema || !this.layers) {
+			throw new Error("Schema required for generating NFTs");
+		}
+		if (fs.existsSync(this.dir)) {
+			fs.rmSync(this.dir, { recursive: true });
+		}
+		fs.mkdirSync(this.dir);
+		fs.mkdirSync(`${this.dir}/metadata`);
+		fs.mkdirSync(`${this.dir}/assets`);
+	}
+	readDirElements(dir: fs.PathLike) {
+		return fs.readdirSync(dir);
+	}
+	async loadImage(element: LayerElement) {
+		try {
+			return new Promise<canvas.Image>(async (resolve) => {
+				const image = await canvas.loadImage(element.path);
+				resolve(image);
+			});
+		} catch (error) {
+			console.error(`Error loading image ${element.path}:`, error);
+		}
+	}
+	saveImage(_index: number, canvasInstance: canvas.Canvas) {
+		fs.writeFileSync(
+			`${this.dir}/assets/${_index}.png`,
+			canvasInstance.toBuffer("image/png")
+		);
+	}
+	saveMetadata(metadata: Metadata, _index: number) {
+		fs.writeFileSync(
+			`${this.dir}/metadata/${_index}.json`,
+			JSON.stringify(metadata, null, 2)
+		);
+	}
+
+	// Setters
 	setBaseURL(url: string) {
 		this.baseURL = url;
 	}
@@ -90,8 +130,7 @@ export class Collection {
 			const rarityWeight = (str: string) =>
 				str.split(".").shift()?.split(rarityDelimiter).pop();
 
-			return fs
-				.readdirSync(dir)
+			return this.readDirElements(dir)
 				.filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
 				.map((i, index) => {
 					//Parsing File name
@@ -145,17 +184,11 @@ export class Collection {
 		this.layers = layers;
 	}
 
+	// NFT Generate Method
 	async generate() {
-		// Making empty directory for generated NFTs
 		if (!this.schema || !this.layers) {
 			throw new Error("Schema required for generating NFTs");
 		}
-		if (fs.existsSync(this.dir)) {
-			fs.rmSync(this.dir, { recursive: true });
-		}
-		fs.mkdirSync(this.dir);
-		fs.mkdirSync(`${this.dir}/metadata`);
-		fs.mkdirSync(`${this.dir}/assets`);
 
 		// Helper Functions for generation
 		// Creates a random DNA of element indexes based on rarity weights
@@ -195,24 +228,6 @@ export class Collection {
 			return mappedDnaToLayers;
 		};
 
-		const loadImage = async (element: LayerElement) => {
-			try {
-				return new Promise<canvas.Image>(async (resolve) => {
-					const image = await canvas.loadImage(element.path);
-					resolve(image);
-				});
-			} catch (error) {
-				console.error(`Error loading image ${element.path}:`, error);
-			}
-		};
-
-		const saveImage = (_index: number) => {
-			fs.writeFileSync(
-				`${this.dir}/assets/${_index}.png`,
-				canvasInstance.toBuffer("image/png")
-			);
-		};
-
 		// Returns metadata in OpenSea format to matadataList variable
 		const getMetadata = (_index: number) => {
 			let tempMetadata: Metadata = {
@@ -225,13 +240,7 @@ export class Collection {
 			return tempMetadata;
 		};
 
-		const saveMetadata = (metadata: Metadata, _index: number) => {
-			fs.writeFileSync(
-				`${this.dir}/metadata/${_index}.json`,
-				JSON.stringify(metadata, null, 2)
-			);
-		};
-
+		// Shuffle integer array with Fisher-Yates Algorithm
 		const shuffle = (array: number[]) => {
 			for (let i = array.length - 1; i > 0; i--) {
 				let j = Math.floor(Math.random() * (i + 1));
@@ -240,6 +249,8 @@ export class Collection {
 		};
 
 		// Initializations
+		this.initializeDir();
+
 		let indexCount: number = 1;
 		let failedCount: number = 0;
 		let abstractedIndexes: number[] = []; // Ordered array of indexes to be created
@@ -264,8 +275,8 @@ export class Collection {
 		const ctx = canvasInstance.getContext("2d");
 		ctx.imageSmoothingEnabled = this.schema.format.smoothing;
 
-		var dnaList = new Set<string>(); //List of all DNAs created so far
-		var attributesList: MetadataAttribute[] = []; //List of attributes added to an NFT, cleared in every iteration
+		var dnaList = new Set<string>(); // List of all DNAs created so far
+		var attributesList: MetadataAttribute[] = []; // List of attributes added to an NFT, cleared in every iteration
 
 		// Generation Loop
 		while (indexCount <= this.schema.size) {
@@ -281,7 +292,7 @@ export class Collection {
 				);
 				let loadedImages: Promise<canvas.Image | undefined>[] = [];
 				selectedElements.forEach((element) => {
-					loadedImages.push(loadImage(element));
+					loadedImages.push(this.loadImage(element));
 				});
 
 				// Rendering Images
@@ -343,19 +354,17 @@ export class Collection {
 					});
 
 					// Saving NFT image and Metadata
-					saveImage(abstractedIndexes[0]);
+					this.saveImage(abstractedIndexes[0], canvasInstance);
 					let meta = getMetadata(abstractedIndexes[0]);
-					saveMetadata(meta, abstractedIndexes[0]);
-					//console.log(`Created index: ${abstractedIndexes[0]}, with DNA: ${newDna}`);
+					this.saveMetadata(meta, abstractedIndexes[0]);
 				});
 
 				// Initializing for next iteration
+				progressBar.update(indexCount);
+				indexCount++;
 				attributesList = [];
 				dnaList.add(newDna);
 				abstractedIndexes.shift();
-
-				progressBar.update(indexCount);
-				indexCount++;
 			} else {
 				// DNA has already been generated
 				failedCount++;
