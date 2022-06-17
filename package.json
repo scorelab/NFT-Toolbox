@@ -1,28 +1,28 @@
 {
-  "name": "nft-toolbox",
-  "version": "1.0.0",
-  "description": "A non-fungible token (NFT) is a non-interchangeable unit of data stored on a blockchain, a form of digital ledger, that can be sold and traded. Each NFT has its own unique identity. Design NFT’s along with building a web3 dapp, that can mint NFTs.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/scorelab/NFT-Toolbox.git"
-  },
-  "author": "",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/scorelab/NFT-Toolbox/issues"
-  },
-  "homepage": "https://github.com/scorelab/NFT-Toolbox#readme",
-  "devDependencies": {
-    "@types/node": "^17.0.42",
-    "typescript": "^4.7.3"
-  },
-  "dependencies": {
-    "canvas": "^2.9.1",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7"
-  }
+	"name": "nft-toolbox",
+	"version": "1.0.0",
+	"description": "A non-fungible token (NFT) is a non-interchangeable unit of data stored on a blockchain, a form of digital ledger, that can be sold and traded. Each NFT has its own unique identity. Design NFT’s along with building a web3 dapp, that can mint NFTs.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/scorelab/NFT-Toolbox.git"
+	},
+	"author": "",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/scorelab/NFT-Toolbox/issues"
+	},
+	"homepage": "https://github.com/scorelab/NFT-Toolbox#readme",
+	"devDependencies": {
+		"@types/node": "^17.0.42",
+		"typescript": "^4.7.3"
+	},
+	"dependencies": {
+		"canvas": "^2.9.1",
+		"fs": "^0.0.1-security",
+		"path": "^0.12.7"
+	}
 }
