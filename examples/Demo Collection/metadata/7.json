@@ -1,0 +1,27 @@
+{
+  "name": "Demo Collection #7",
+  "description": "This is a demo collection for NFT Toolbox",
+  "image": "ipfs://bafybeie4n5dys3emgmcv4jsks5swfzla2uydmnjaxqtqwhfrweysg5dn74/7.png",
+  "attributes": [
+    {
+      "trait_type": "background",
+      "value": "grey"
+    },
+    {
+      "trait_type": "first character",
+      "value": "green"
+    },
+    {
+      "trait_type": "second character",
+      "value": "green"
+    },
+    {
+      "trait_type": "third character",
+      "value": "blue"
+    },
+    {
+      "trait_type": "fourth character",
+      "value": "green"
+    }
+  ]
+}

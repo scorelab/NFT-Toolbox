@@ -24,7 +24,9 @@ export class ProgressBar {
 	}
 
 	private draw(current_progress: number) {
-		const filled_bar_length = current_progress * this.bar_length;
+		const filled_bar_length = Math.round(
+			current_progress * this.bar_length
+		);
 		const empty_bar_length = this.bar_length - filled_bar_length;
 		const filled_bar = "#".repeat(filled_bar_length);
 		const empty_bar = "-".repeat(empty_bar_length);
