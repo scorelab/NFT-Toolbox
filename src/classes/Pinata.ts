@@ -1,7 +1,5 @@
 import fs from "fs";
-import path from "path";
 import pinataSDK, { PinataClient } from "@pinata/sdk";
-import { Collection } from "./Collection";
 import { IPFS } from "./IPFS";
 
 export class Pinata extends IPFS {
@@ -17,7 +15,8 @@ export class Pinata extends IPFS {
 				//console.log(result);
 			})
 			.catch((err) => {
-				console.log("Failed to initialize Pinata", err);
+				console.error("Failed to initialize Pinata", err);
+				throw new Error("Pinata Initialization Failed");
 			});
 	}
 
@@ -27,7 +26,15 @@ export class Pinata extends IPFS {
 
 		try {
 			const result = await this.pinataObj.pinFromFS(dir.toString());
-			return result.IpfsHash;
+			const cid = result.IpfsHash;
+
+			// Path containing unwanted folders pinned to IPFS
+			const unwantedFolders = dir
+				.toString()
+				.slice(dir.toString().indexOf("\\"))
+				.replace("\\", "/");
+
+			return cid + unwantedFolders;
 		} catch (err) {
 			console.error(err);
 			throw new Error("Upload Failed");

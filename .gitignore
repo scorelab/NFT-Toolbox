@@ -1,3 +1,5 @@
 node_modules/
 .prettierrc.json
 examples/Demo Collection/
+tests-errors.txt
+tests-manifest.csv
