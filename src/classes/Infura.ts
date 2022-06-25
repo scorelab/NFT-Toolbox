@@ -4,9 +4,10 @@ import FormData from "form-data";
 import fs from "fs";
 import path from "path";
 
-export class Storj extends IPFS {
+export class Infura extends IPFS {
 	serviceBaseURL = "ipfs:/";
-	URL = `https://www.storj-ipfs.com/api/v0/add`;
+
+	URL = `https://ipfs.infura.io:5001/api/v0/add`;
 	AUTH: {
 		username: string;
 		password: string;
@@ -26,17 +27,16 @@ export class Storj extends IPFS {
 			});
 		});
 
-		// Execute the Upload request to the Storj IPFS pinning service
+		// Execute the Upload request to the Infura IPFS pinning service
 		const response = await axios.post(this.URL, formData, {
-			auth: this.AUTH,
 			headers: {
 				"Content-Type": `multipart/form-data; boundary= ${formData.getBoundary()}`,
+				Authorization: `Basic ${this.AUTH.username}:${this.AUTH.password}`,
 			},
-			// These arguments remove any client-side upload size restrictions
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
 
-		return response.data.cid;
+		return response.data.Hash;
 	}
 }

@@ -63,7 +63,10 @@ export class Collection {
 	dir: fs.PathLike;
 	description: string = "";
 
-	baseURL: string = "ipfs://";
+	baseURL: string = "";
+	assetsDirCID: string = "";
+	metadataDirCID: string = "";
+
 	extraMetadata: object = {};
 	schema?: LayerSchema = undefined;
 	layers?: Layer[] = undefined;
@@ -116,6 +119,12 @@ export class Collection {
 	// Setters
 	setBaseURL(url: string) {
 		this.baseURL = url;
+	}
+	setAssetsDirCID(cid: string) {
+		this.assetsDirCID = cid;
+	}
+	setMetadataDirCID(cid: string) {
+		this.metadataDirCID = cid;
 	}
 	setExtraMetadata(data: object) {
 		this.extraMetadata = data;
@@ -233,7 +242,7 @@ export class Collection {
 			let tempMetadata: Metadata = {
 				name: `${this.name} #${_index}`,
 				description: this.description,
-				image: `ipfs://(ImageFolderCID)/${_index}.png`,
+				image: `${this.baseURL}/${this.assetsDirCID}/${_index}.png`,
 				attributes: attributesList, // Dynamic list maintained in the Generation Loop
 				...this.extraMetadata,
 			};
@@ -381,7 +390,7 @@ export class Collection {
 		);
 	}
 
-	updateImageCID(cid: string) {
+	updateMetadataWithCID() {
 		const metadataDir = path.join(this.dir.toString(), "metadata");
 		const files = fs.readdirSync(metadataDir);
 		if ((files && files.length) <= 0) {
@@ -395,7 +404,9 @@ export class Collection {
 			const filePath = path.join(metadataDir, fileName);
 			var file_content = fs.readFileSync(filePath);
 			var content = JSON.parse(file_content.toString());
-			content.image = `ipfs://${cid}/${path.parse(fileName).name}.png`;
+			content.image = `${this.baseURL}/${this.assetsDirCID}/${
+				path.parse(fileName).name
+			}.png`;
 			fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
 		});
 	}

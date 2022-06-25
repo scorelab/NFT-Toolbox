@@ -5,6 +5,7 @@ import { Collection } from "./Collection";
 import { IPFS } from "./IPFS";
 
 export class Pinata extends IPFS {
+	serviceBaseURL: string = "ipfs:/";
 	pinataObj: PinataClient;
 
 	constructor(key: string, security: string) {
@@ -20,7 +21,7 @@ export class Pinata extends IPFS {
 			});
 	}
 
-	async uploadDirToPinata(dir: fs.PathLike) {
+	async uploadDirToService(dir: fs.PathLike) {
 		// PinataSDK is pinning entire absolute path to IPFS instead of One Folder
 		// See issue https://github.com/PinataCloud/Pinata-SDK/issues/85
 
@@ -31,21 +32,5 @@ export class Pinata extends IPFS {
 			console.error(err);
 			throw new Error("Upload Failed");
 		}
-	}
-
-	async upload(collection: Collection) {
-		console.log("Uploading Assets...");
-		const ImageFolderCID = await this.uploadDirToPinata(
-			path.join(collection.dir.toString(), "assets")
-		);
-		collection.updateImageCID(ImageFolderCID);
-
-		console.log("Uploading Metadata...");
-		const MetaFolderCID = await this.uploadDirToPinata(
-			path.join(collection.dir.toString(), "metadata")
-		);
-		collection.setBaseURL(`ipfs://${MetaFolderCID}/`);
-
-		console.log("Upload Complete");
 	}
 }
