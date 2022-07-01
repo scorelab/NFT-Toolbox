@@ -65,6 +65,17 @@ export class Contract {
 		this.symbol = attr.symbol;
 	}
 
+	write(contractCode: string) {
+		if (!fs.existsSync(this.dir)) {
+			fs.mkdirSync(this.dir);
+		}
+		fs.writeFileSync(
+			path.join(this.dir.toString(), `${this.name}.sol`),
+			contractCode,
+			{ flag: "w" }
+		);
+	}
+
 	draft(options: DraftOptions) {
 		let contractCode: string;
 		switch (this.standard) {
@@ -83,14 +94,7 @@ export class Contract {
 				});
 				break;
 		}
-		if (!fs.existsSync(this.dir)) {
-			fs.mkdirSync(this.dir);
-		}
-		fs.writeFileSync(
-			path.join(this.dir.toString(), `${this.name}.sol`),
-			contractCode,
-			{ flag: "w" }
-		);
+		this.write(contractCode);
 		console.log(`Contract created : ${this.dir}`);
 	}
 }
