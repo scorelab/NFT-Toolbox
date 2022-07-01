@@ -1,6 +1,9 @@
+import { ERC1155Options } from "@openzeppelin/wizard/dist/erc1155";
+import { ERC721Options } from "@openzeppelin/wizard/dist/erc721";
 import { execSync } from "child_process";
 import { Arweave } from "./classes/Arweave";
 import { Collection, LayerSchema } from "./classes/Collection";
+import { Contract, ContractAttributes } from "./classes/Contract";
 import { Infura } from "./classes/Infura";
 import { IPFS } from "./classes/IPFS";
 import { NFTstorage } from "./classes/NFTstorage";
@@ -10,6 +13,7 @@ import { Storj } from "./classes/Storj";
 class Toolbox {
 	private collection: Collection | undefined = undefined;
 	private ipfsService: IPFS | undefined = undefined;
+	private contract: Contract | undefined = undefined;
 
 	initCollection(attr: { name: string; dir: string; description?: string }) {
 		this.collection = new Collection({
@@ -97,6 +101,31 @@ class Toolbox {
 			throw new Error("No IPFS Service is initialized");
 		}
 		this.ipfsService.upload(this.collection);
+	}
+
+	initContract(attr: ContractAttributes) {
+		this.contract = new Contract(attr);
+	}
+
+	draftContract(options: {
+		baseUri: string;
+		// Common options
+		burnable?: boolean;
+		pausable?: boolean;
+		mintable?: boolean;
+		// ERC721 options
+		enumerable?: boolean;
+		uriStorage?: boolean;
+		incremental?: boolean;
+		votes?: boolean;
+		// ERC1155 options
+		supply?: boolean;
+		updatableUri?: boolean;
+	}) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.draft(options);
 	}
 }
 
