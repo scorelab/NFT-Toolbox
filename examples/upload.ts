@@ -34,10 +34,10 @@ nftToolbox.initCollection({
 // 	secret: accounts.PINATA_SECURITY,
 // });
 
-// nftToolbox.initIPFSService({
-// 	service: "nft.storage",
-// 	key: accounts.NFT_STORAGE_KEY,
-// });
+nftToolbox.initIPFSService({
+	service: "nft.storage",
+	key: accounts.NFT_STORAGE_KEY,
+});
 
 // nftToolbox.initIPFSService({
 // 	service: "storj",
@@ -50,10 +50,10 @@ nftToolbox.initCollection({
 // 	wallet: accounts.ARWEAVE_WALLET,
 // });
 
-nftToolbox.initIPFSService({
-	service: "infura",
-	username: accounts.INFURA_USERNAME,
-	password: accounts.INFURA_PASSWORD,
-});
+// nftToolbox.initIPFSService({
+// 	service: "infura",
+// 	username: accounts.INFURA_USERNAME,
+// 	password: accounts.INFURA_PASSWORD,
+// });
 
 nftToolbox.uploadNFTs();
