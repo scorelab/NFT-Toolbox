@@ -1,7 +1,6 @@
 import fs from "fs";
 import { erc721, erc1155 } from "@openzeppelin/wizard";
 import path from "path";
-<<<<<<< HEAD
 import { ethers } from "ethers";
 const solc = require("solc");
 
@@ -14,10 +13,6 @@ type networks =
 	| "kovan"
 	| "matic"
 	| "maticmum";
-=======
-
-type ercStandards = "ERC721" | "ERC1155";
->>>>>>> f757f5fe579d141132818fe2f65ef0e156361de9
 
 /*
 interface ERC721Options {
@@ -43,11 +38,7 @@ interface ERC1155Options {
     updatableUri?: boolean;
 }
 */
-<<<<<<< HEAD
 export interface DraftOptions {
-=======
-interface DraftOptions {
->>>>>>> f757f5fe579d141132818fe2f65ef0e156361de9
 	baseUri: string;
 	// Common options
 	burnable?: boolean;
@@ -63,7 +54,6 @@ interface DraftOptions {
 	updatableUri?: boolean;
 }
 
-<<<<<<< HEAD
 export interface DeployConfigs {
 	network: networks;
 	provider: {
@@ -84,8 +74,6 @@ export interface DeployConfigs {
 	};
 }
 
-=======
->>>>>>> f757f5fe579d141132818fe2f65ef0e156361de9
 export interface ContractAttributes {
 	dir: fs.PathLike;
 	standard: ercStandards;
@@ -100,13 +88,10 @@ export class Contract {
 	name: string;
 	symbol: string;
 
-<<<<<<< HEAD
 	signer: ethers.Signer | undefined = undefined;
 	provider: ethers.providers.Provider | undefined = undefined;
 	contractInstance: ethers.Contract | undefined = undefined;
 
-=======
->>>>>>> f757f5fe579d141132818fe2f65ef0e156361de9
 	constructor(attr: ContractAttributes) {
 		this.dir = attr.dir;
 		this.standard = attr.standard;
@@ -146,7 +131,6 @@ export class Contract {
 		this.write(contractCode);
 		console.log(`Contract created : ${this.dir}`);
 	}
-<<<<<<< HEAD
 
 	compile() {
 		const compilerInput = {
@@ -232,6 +216,4 @@ export class Contract {
 		);
 		this.contractInstance = contract;
 	}
-=======
->>>>>>> f757f5fe579d141132818fe2f65ef0e156361de9
 }
