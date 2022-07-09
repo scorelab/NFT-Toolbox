@@ -9,7 +9,17 @@ nftToolbox.initContract({
 });
 
 nftToolbox.draftContract({
-	baseUri: "ipfs://",
+	baseUri: "ipfs://exampleCID/",
 	mintable: true,
 	incremental: true,
+});
+
+nftToolbox.deployContract({
+	network: "rinkeby",
+	provider: {
+		etherscan: "dummy_API_KEY",
+	},
+	wallet: {
+		privateKey: "dummy_PVT_KEY",
+	},
 });

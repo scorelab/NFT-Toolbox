@@ -1,8 +1,18 @@
 import fs from "fs";
 import { erc721, erc1155 } from "@openzeppelin/wizard";
 import path from "path";
+import { ethers } from "ethers";
+const solc = require("solc");
 
 type ercStandards = "ERC721" | "ERC1155";
+type networks =
+	| "homestead"
+	| "ropsten"
+	| "rinkeby"
+	| "goerli"
+	| "kovan"
+	| "matic"
+	| "maticmum";
 
 /*
 interface ERC721Options {
@@ -28,7 +38,7 @@ interface ERC1155Options {
     updatableUri?: boolean;
 }
 */
-interface DraftOptions {
+export interface DraftOptions {
 	baseUri: string;
 	// Common options
 	burnable?: boolean;
@@ -44,6 +54,26 @@ interface DraftOptions {
 	updatableUri?: boolean;
 }
 
+export interface DeployConfigs {
+	network: networks;
+	provider: {
+		etherscan?: string;
+		alchemy?: string;
+		ankr?: string;
+		infura?: {
+			projectId: string;
+			projectSecret: string;
+		};
+		pocket?: {
+			applicationId: string;
+			applicationSecretKey: string;
+		};
+	};
+	wallet: {
+		privateKey: string;
+	};
+}
+
 export interface ContractAttributes {
 	dir: fs.PathLike;
 	standard: ercStandards;
@@ -57,6 +87,10 @@ export class Contract {
 
 	name: string;
 	symbol: string;
+
+	signer: ethers.Signer | undefined = undefined;
+	provider: ethers.providers.Provider | undefined = undefined;
+	contractInstance: ethers.Contract | undefined = undefined;
 
 	constructor(attr: ContractAttributes) {
 		this.dir = attr.dir;
@@ -96,5 +130,90 @@ export class Contract {
 		}
 		this.write(contractCode);
 		console.log(`Contract created : ${this.dir}`);
+	}
+
+	compile() {
+		const compilerInput = {
+			language: "Solidity",
+			sources: {
+				Contract: {
+					content: fs
+						.readFileSync(
+							path.join(this.dir.toString(), `${this.name}.sol`)
+						)
+						.toString()
+						.replace("@", "./@"),
+				},
+			},
+			settings: {
+				outputSelection: {
+					"*": {
+						"*": ["*"],
+					},
+				},
+			},
+		};
+
+		console.log(`Compiling ${this.name}.sol`);
+		const compilerOutput = solc.compile(JSON.stringify(compilerInput));
+		console.log("Compilation Successful");
+		return JSON.parse(compilerOutput);
+	}
+
+	async deploy(config: DeployConfigs) {
+		const network = ethers.providers.getNetwork(config.network);
+		if (Object.keys(config.provider).length != 1) {
+			throw new Error(
+				`Exactly One Provider is expected, found ${
+					Object.keys(config.provider).length
+				}`
+			);
+		}
+		switch (Object.keys(config.provider)[0]) {
+			case "etherscan":
+				this.provider = new ethers.providers.EtherscanProvider(
+					network,
+					config.provider.etherscan
+				);
+			case "alchemy":
+				this.provider = new ethers.providers.AlchemyProvider(
+					network,
+					config.provider.alchemy
+				);
+			case "ankr":
+				this.provider = new ethers.providers.AnkrProvider(
+					network,
+					config.provider.ankr
+				);
+			case "infura":
+				this.provider = new ethers.providers.InfuraProvider(
+					network,
+					config.provider.infura
+				);
+			case "pocket":
+				this.provider = new ethers.providers.PocketProvider(
+					network,
+					config.provider.pocket
+				);
+		}
+
+		this.signer = new ethers.Wallet(
+			config.wallet.privateKey,
+			this.provider
+		);
+
+		const cntFactory = ethers.ContractFactory.fromSolidity(
+			this.compile(),
+			this.signer
+		);
+		console.log(`Deploying ${this.name}.sol`);
+		const contract = await cntFactory.deploy();
+		const receipt = await contract.deployTransaction.wait();
+		console.log(
+			"Deployment Successful",
+			`Contract Address : ${contract.address}`,
+			receipt
+		);
+		this.contractInstance = contract;
 	}
 }

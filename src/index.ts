@@ -3,7 +3,12 @@ import { ERC721Options } from "@openzeppelin/wizard/dist/erc721";
 import { execSync } from "child_process";
 import { Arweave } from "./classes/Arweave";
 import { Collection, LayerSchema } from "./classes/Collection";
-import { Contract, ContractAttributes } from "./classes/Contract";
+import {
+	Contract,
+	ContractAttributes,
+	DraftOptions,
+	DeployConfigs,
+} from "./classes/Contract";
 import { Infura } from "./classes/Infura";
 import { IPFS } from "./classes/IPFS";
 import { NFTstorage } from "./classes/NFTstorage";
@@ -107,25 +112,18 @@ class Toolbox {
 		this.contract = new Contract(attr);
 	}
 
-	draftContract(options: {
-		baseUri: string;
-		// Common options
-		burnable?: boolean;
-		pausable?: boolean;
-		mintable?: boolean;
-		// ERC721 options
-		enumerable?: boolean;
-		uriStorage?: boolean;
-		incremental?: boolean;
-		votes?: boolean;
-		// ERC1155 options
-		supply?: boolean;
-		updatableUri?: boolean;
-	}) {
+	draftContract(options: DraftOptions) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
 		}
 		this.contract.draft(options);
+	}
+
+	deployContract(options: DeployConfigs) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.deploy(options);
 	}
 }
 
