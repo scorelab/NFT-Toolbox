@@ -119,6 +119,14 @@ class Toolbox {
 		this.contract.draft(options);
 	}
 
+	//testing
+	compileContract() {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		return this.contract.compile();
+	}
+
 	deployContract(options: DeployConfigs) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");

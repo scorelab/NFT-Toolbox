@@ -90,7 +90,7 @@ export class Contract {
 
 	signer: ethers.Signer | undefined = undefined;
 	provider: ethers.providers.Provider | undefined = undefined;
-	contractInstance: ethers.Contract | undefined = undefined;
+	deployedInstance: ethers.Contract | undefined = undefined;
 
 	constructor(attr: ContractAttributes) {
 		this.dir = attr.dir;
@@ -133,6 +133,20 @@ export class Contract {
 	}
 
 	compile() {
+		function findImports(importPath: string) {
+			if (importPath.startsWith("@openzeppelin"))
+				return {
+					contents: fs
+						.readFileSync(
+							path.join(process.cwd(), "node_modules", importPath)
+						)
+						.toString(),
+				};
+			else {
+				return { error: "OPEN ZEPPELIN IMPORT FAILED" };
+			}
+		}
+
 		const compilerInput = {
 			language: "Solidity",
 			sources: {
@@ -141,8 +155,7 @@ export class Contract {
 						.readFileSync(
 							path.join(this.dir.toString(), `${this.name}.sol`)
 						)
-						.toString()
-						.replace("@", "./@"),
+						.toString(),
 				},
 			},
 			settings: {
@@ -155,9 +168,15 @@ export class Contract {
 		};
 
 		console.log(`Compiling ${this.name}.sol`);
-		const compilerOutput = solc.compile(JSON.stringify(compilerInput));
-		console.log("Compilation Successful");
-		return JSON.parse(compilerOutput);
+		const compilerOutput = JSON.parse(
+			solc.compile(JSON.stringify(compilerInput), { import: findImports })
+		);
+		// if (!compilerOutput.errors) {
+		// 	console.log("Compilation Successful");
+		// } else {
+		// 	console.log("Compilation Not Successful");
+		// }
+		return compilerOutput;
 	}
 
 	async deploy(config: DeployConfigs) {
@@ -203,17 +222,13 @@ export class Contract {
 		);
 
 		const cntFactory = ethers.ContractFactory.fromSolidity(
-			this.compile(),
+			this.compile().contracts.Contract[this.name],
 			this.signer
 		);
 		console.log(`Deploying ${this.name}.sol`);
 		const contract = await cntFactory.deploy();
 		const receipt = await contract.deployTransaction.wait();
-		console.log(
-			"Deployment Successful",
-			`Contract Address : ${contract.address}`,
-			receipt
-		);
-		this.contractInstance = contract;
+		console.log(`Contract Address : ${contract.address}`);
+		this.deployedInstance = contract;
 	}
 }
