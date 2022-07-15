@@ -9,7 +9,7 @@ nftToolbox.initCollection({
 
 nftToolbox.generateNFTs({
 	dir: path.join(__dirname, "layers"),
-	size: 100,
+	size: 5,
 	layersOrder: [
 		{ name: "background" },
 		{ name: "first character" },
@@ -25,7 +25,7 @@ nftToolbox.generateNFTs({
 	background: {
 		generate: false,
 	},
-	dnaCollisionTolerance: 1000,
+	dnaCollisionTolerance: 100,
 	rarityDelimiter: "#",
 	rarityDefault: "1",
 	shuffleIndexes: true,
