@@ -127,11 +127,20 @@ class Toolbox {
 		return this.contract.compile();
 	}
 
-	deployContract(options: DeployConfigs) {
+	deployContract() {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
 		}
-		this.contract.deploy(options);
+		this.contract.deploy();
+	}
+
+	mintNFT(address: string) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.mint(address).then((res) => {
+			return res;
+		});
 	}
 }
 

@@ -79,6 +79,11 @@ export interface ContractAttributes {
 	standard: ercStandards;
 	name: string;
 	symbol: string;
+	connection: DeployConfigs;
+	deployed?: {
+		address: string;
+		abi: string;
+	};
 }
 
 export class Contract {
@@ -88,8 +93,9 @@ export class Contract {
 	name: string;
 	symbol: string;
 
-	signer: ethers.Signer | undefined = undefined;
-	provider: ethers.providers.Provider | undefined = undefined;
+	signer: ethers.Signer;
+	provider: ethers.providers.Provider;
+
 	deployedInstance: ethers.Contract | undefined = undefined;
 
 	constructor(attr: ContractAttributes) {
@@ -97,7 +103,63 @@ export class Contract {
 		this.standard = attr.standard;
 		this.name = attr.name;
 		this.symbol = attr.symbol;
+
+		this.provider = this.getProvider(attr.connection);
+		this.signer = new ethers.Wallet(
+			attr.connection.wallet.privateKey,
+			this.provider
+		);
+
+		if (attr.deployed) {
+			this.deployedInstance = new ethers.Contract(
+				attr.deployed.address,
+				attr.deployed.abi,
+				this.signer
+			);
+		}
 	}
+
+	getProvider = (config: DeployConfigs) => {
+		const network = ethers.providers.getNetwork(config.network);
+		if (Object.keys(config.provider).length != 1) {
+			throw new Error(
+				`Exactly One Provider is expected, found ${
+					Object.keys(config.provider).length
+				}`
+			);
+		}
+		switch (Object.keys(config.provider)[0]) {
+			case "etherscan":
+				return new ethers.providers.EtherscanProvider(
+					network,
+					config.provider.etherscan
+				);
+			case "alchemy":
+				return new ethers.providers.AlchemyProvider(
+					network,
+					config.provider.alchemy
+				);
+			case "ankr":
+				return new ethers.providers.AnkrProvider(
+					network,
+					config.provider.ankr
+				);
+			case "infura":
+				return new ethers.providers.InfuraProvider(
+					network,
+					config.provider.infura
+				);
+			case "pocket":
+				return new ethers.providers.PocketProvider(
+					network,
+					config.provider.pocket
+				);
+			default:
+				throw new Error(
+					`Provider ${Object.keys(config.provider)} not supported`
+				);
+		}
+	};
 
 	write(contractCode: string) {
 		if (!fs.existsSync(this.dir)) {
@@ -171,56 +233,10 @@ export class Contract {
 		const compilerOutput = JSON.parse(
 			solc.compile(JSON.stringify(compilerInput), { import: findImports })
 		);
-		// if (!compilerOutput.errors) {
-		// 	console.log("Compilation Successful");
-		// } else {
-		// 	console.log("Compilation Not Successful");
-		// }
 		return compilerOutput;
 	}
 
-	async deploy(config: DeployConfigs) {
-		const network = ethers.providers.getNetwork(config.network);
-		if (Object.keys(config.provider).length != 1) {
-			throw new Error(
-				`Exactly One Provider is expected, found ${
-					Object.keys(config.provider).length
-				}`
-			);
-		}
-		switch (Object.keys(config.provider)[0]) {
-			case "etherscan":
-				this.provider = new ethers.providers.EtherscanProvider(
-					network,
-					config.provider.etherscan
-				);
-			case "alchemy":
-				this.provider = new ethers.providers.AlchemyProvider(
-					network,
-					config.provider.alchemy
-				);
-			case "ankr":
-				this.provider = new ethers.providers.AnkrProvider(
-					network,
-					config.provider.ankr
-				);
-			case "infura":
-				this.provider = new ethers.providers.InfuraProvider(
-					network,
-					config.provider.infura
-				);
-			case "pocket":
-				this.provider = new ethers.providers.PocketProvider(
-					network,
-					config.provider.pocket
-				);
-		}
-
-		this.signer = new ethers.Wallet(
-			config.wallet.privateKey,
-			this.provider
-		);
-
+	async deploy() {
 		const cntFactory = ethers.ContractFactory.fromSolidity(
 			this.compile().contracts.Contract[this.name],
 			this.signer
@@ -230,5 +246,13 @@ export class Contract {
 		const receipt = await contract.deployTransaction.wait();
 		console.log(`Contract Address : ${contract.address}`);
 		this.deployedInstance = contract;
+	}
+
+	async mint(address: string) {
+		if (!this.deployedInstance) {
+			throw new Error("Contract has not been deployed");
+		}
+		await this.deployedInstance.functions.safeMint(address);
+		console.log("New Token Minted");
 	}
 }
