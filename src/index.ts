@@ -1,7 +1,11 @@
 import { Collection, LayerSchema } from "./classes/Collection";
+import { FileStorage } from "./classes/FileStorage";
+import { Infura } from "./classes/Infura";
+import { Storj } from "./classes/Storj";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
+	private fileStorageService: FileStorage | undefined = undefined;
 
 	initCollection(attr: { name: string; dir: string; description?: string }) {
 		this.collection = new Collection({
@@ -17,6 +21,56 @@ class Toolbox {
 		}
 		this.collection.setSchema(schema);
 		this.collection.generate();
+	}
+
+	initFileStorageService(attr: {
+		service: string;
+		key?: string;
+		secret?: string;
+		username?: string;
+		password?: string;
+		wallet?: any;
+	}) {
+		switch (attr.service) {
+			case "storj":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				this.fileStorageService = new Storj(
+					attr.username,
+					attr.password
+				);
+				break;
+
+			case "infura":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				this.fileStorageService = new Infura(
+					attr.username,
+					attr.password
+				);
+				break;
+
+			default:
+				throw new Error("Unknown IPFS Service");
+		}
+	}
+
+	uploadNFTs() {
+		if (!this.collection) {
+			throw new Error("No Collection is initialized");
+		}
+		if (!this.fileStorageService) {
+			throw new Error("No IPFS Service is initialized");
+		}
+		this.fileStorageService.upload(this.collection);
 	}
 }
 
