@@ -1,6 +1,8 @@
 import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
+import { execSync } from "child_process";
+import { Arweave } from "./classes/Arweave";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
@@ -31,6 +33,16 @@ class Toolbox {
 		wallet?: any;
 	}) {
 		switch (attr.service) {
+			case "arweave":
+				if (!attr.wallet) {
+					throw new Error("Arweave Wallet required");
+				}
+				execSync("npm install @bundlr-network/client", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Arweave(attr.wallet);
+				break;
+
 			default:
 				throw new Error("Unknown IPFS Service");
 		}
