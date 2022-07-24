@@ -1,5 +1,7 @@
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
+import { Infura } from "./classes/Infura";
+import { Storj } from "./classes/Storj";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
@@ -30,6 +32,32 @@ class Toolbox {
 		wallet?: any;
 	}) {
 		switch (attr.service) {
+			case "storj":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				this.fileStorageService = new Storj(
+					attr.username,
+					attr.password
+				);
+				break;
+
+			case "infura":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				this.fileStorageService = new Infura(
+					attr.username,
+					attr.password
+				);
+				break;
+
 			default:
 				throw new Error("Unknown IPFS Service");
 		}
