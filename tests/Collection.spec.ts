@@ -68,10 +68,7 @@ const testColObj = new Collection({
 
 describe("Test suite for Schema Setter", () => {
 	beforeEach(() => {
-		mock(TEST_FAKE_DIR_STRUCTURE, {
-			createCwd: true,
-			createTmp: true,
-		});
+		mock(TEST_FAKE_DIR_STRUCTURE);
 	});
 	afterEach(() => {
 		mock.restore();
@@ -100,10 +97,7 @@ describe("Test suite for Schema Setter", () => {
 
 describe("Test suite for Generate Method", () => {
 	beforeEach(() => {
-		mock(TEST_FAKE_DIR_STRUCTURE, {
-			createCwd: true,
-			createTmp: true,
-		});
+		mock(TEST_FAKE_DIR_STRUCTURE);
 	});
 	afterEach(() => {
 		mock.restore();
