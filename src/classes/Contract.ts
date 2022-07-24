@@ -193,4 +193,66 @@ export class Contract {
 		this.write(contractCode);
 		console.log(`Contract created : ${this.dir}`);
 	}
+
+	compile() {
+		function findImports(importPath: string) {
+			if (importPath.startsWith("@openzeppelin"))
+				return {
+					contents: fs
+						.readFileSync(
+							path.join(process.cwd(), "node_modules", importPath)
+						)
+						.toString(),
+				};
+			else {
+				return { error: "OPEN ZEPPELIN IMPORT FAILED" };
+			}
+		}
+
+		const compilerInput = {
+			language: "Solidity",
+			sources: {
+				Contract: {
+					content: fs
+						.readFileSync(
+							path.join(this.dir.toString(), `${this.name}.sol`)
+						)
+						.toString(),
+				},
+			},
+			settings: {
+				outputSelection: {
+					"*": {
+						"*": ["*"],
+					},
+				},
+			},
+		};
+
+		console.log(`Compiling ${this.name}.sol`);
+		const compilerOutput = JSON.parse(
+			solc.compile(JSON.stringify(compilerInput), { import: findImports })
+		);
+		return compilerOutput;
+	}
+
+	async deploy() {
+		const cntFactory = ethers.ContractFactory.fromSolidity(
+			this.compile().contracts.Contract[this.name],
+			this.signer
+		);
+		console.log(`Deploying ${this.name}.sol`);
+		const contract = await cntFactory.deploy();
+		const receipt = await contract.deployTransaction.wait();
+		console.log(`Contract Address : ${contract.address}`);
+		this.deployedInstance = contract;
+	}
+
+	async mint(address: string) {
+		if (!this.deployedInstance) {
+			throw new Error("Contract has not been deployed");
+		}
+		await this.deployedInstance.functions.safeMint(address);
+		console.log("New Token Minted");
+	}
 }
