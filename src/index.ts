@@ -1,6 +1,7 @@
 import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
+import { execSync } from "child_process";
 import { Infura } from "./classes/Infura";
 import { Storj } from "./classes/Storj";
 
@@ -40,6 +41,9 @@ class Toolbox {
 				if (!attr.password) {
 					throw new Error("STORJ Password required");
 				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
 				this.fileStorageService = new Storj(
 					attr.username,
 					attr.password
@@ -48,11 +52,14 @@ class Toolbox {
 
 			case "infura":
 				if (!attr.username) {
-					throw new Error("STORJ Username required");
+					throw new Error("INFURA Username required");
 				}
 				if (!attr.password) {
-					throw new Error("STORJ Password required");
+					throw new Error("INFURA Password required");
 				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
 				this.fileStorageService = new Infura(
 					attr.username,
 					attr.password

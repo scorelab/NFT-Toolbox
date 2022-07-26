@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import { FileStorage } from "./FileStorage";
 
+const ndjsonParser = require("ndjson-parse");
+
 export class Infura extends FileStorage {
 	serviceBaseURL = "ipfs:/";
 
@@ -37,6 +39,10 @@ export class Infura extends FileStorage {
 			maxBodyLength: Infinity,
 		});
 
-		return response.data.Hash;
+		const responseArray = ndjsonParser(response.data);
+		const dirResponse = responseArray.find(
+			(res: any) => res.Name === dir.toString().split("\\").join("/")
+		);
+		return dirResponse.Hash;
 	}
 }

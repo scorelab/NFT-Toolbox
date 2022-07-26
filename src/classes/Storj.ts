@@ -4,6 +4,8 @@ import fs from "fs";
 import path from "path";
 import { FileStorage } from "./FileStorage";
 
+const ndjsonParser = require("ndjson-parse");
+
 export class Storj extends FileStorage {
 	serviceBaseURL = "ipfs:/";
 	URL = `https://www.storj-ipfs.com/api/v0/add`;
@@ -36,7 +38,10 @@ export class Storj extends FileStorage {
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
-
-		return response.data.cid;
+		const responseArray = ndjsonParser(response.data);
+		const dirResponse = responseArray.find(
+			(res: any) => res.Name === dir.toString().split("\\").join("/")
+		);
+		return dirResponse.Hash;
 	}
 }
