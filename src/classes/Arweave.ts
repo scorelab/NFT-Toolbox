@@ -31,10 +31,11 @@ export class Arweave extends FileStorage {
 		const price = await this.CONNECTION.getPrice(dirSize(dir.toString()));
 		const balance = await this.CONNECTION.getLoadedBalance();
 
-		if (balance.isLessThan(price)) {
+		if (price.multipliedBy(1.1).isGreaterThan(balance)) {
+			console.log("Funding Bundlr Node");
 			// Multiply by 1.1 to make sure we don't run out of funds
 			await this.CONNECTION.fund(
-				price.minus(balance).multipliedBy(1.1).integerValue()
+				price.multipliedBy(1.1).minus(balance).integerValue()
 			);
 		}
 
@@ -43,7 +44,6 @@ export class Arweave extends FileStorage {
 		);
 		//returns the manifest ID if successful.
 
-		console.log(response);
 		return response;
 	}
 }
