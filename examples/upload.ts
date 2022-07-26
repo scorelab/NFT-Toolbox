@@ -10,14 +10,9 @@ const accounts = {
 		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGIwNzFBZTU0Q0RFNmQ2MDZBNDU2N0Y2QzE2NzQ3NDNBN2E4NzdlQjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NTkyMTY1Mzg5OCwibmFtZSI6Ik5GVCBUb29sYm94IERlbW8ifQ.sKGyyKdhvsfFhB399DNrHJtJcS5vLeAvWnAdAziuc3I",
 	STORJ_USERNAME: "username",
 	STORJ_PASSWORD: "password",
-	ARWEAVE_WALLET: JSON.parse(
-		readFileSync(
-			path.join(
-				__dirname,
-				"N_Y51kc4Oy72mvRhohtlwDXM_Uy3dgYikhGPSbPhR0Y.json"
-			)
-		).toString()
-	),
+	ARWEAVE_CURRENCY: "matic",
+	ARWEAVE_WALLET:
+		"e70c22ca3f3c257f35cc91e64e4e84847fc3f5ca6fe9d775a5254c8ea27a9d3e",
 	INFURA_USERNAME: "username",
 	INFURA_PASSWORD: "password",
 };
@@ -47,6 +42,7 @@ nftToolbox.initCollection({
 
 // nftToolbox.initFileStorageService({
 // 	service: "arweave",
+// 	currency: accounts.ARWEAVE_CURRENCY,
 // 	wallet: accounts.ARWEAVE_WALLET,
 // });
 

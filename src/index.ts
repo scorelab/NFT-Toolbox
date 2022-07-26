@@ -30,17 +30,21 @@ class Toolbox {
 		secret?: string;
 		username?: string;
 		password?: string;
+		currency?: string;
 		wallet?: any;
 	}) {
 		switch (attr.service) {
 			case "arweave":
-				if (!attr.wallet) {
-					throw new Error("Arweave Wallet required");
+				if (!attr.wallet || !attr.currency) {
+					throw new Error("Arweave Currency and Wallet required");
 				}
 				execSync("npm install @bundlr-network/client", {
 					stdio: [0, 1, 2],
 				});
-				this.fileStorageService = new Arweave(attr.wallet);
+				this.fileStorageService = new Arweave(
+					attr.currency,
+					attr.wallet
+				);
 				break;
 
 			default:
