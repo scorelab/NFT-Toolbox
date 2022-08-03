@@ -161,7 +161,7 @@ export class Contract {
 		}
 	};
 
-	write(contractCode: string) {
+	print(contractCode: string) {
 		if (!fs.existsSync(this.dir)) {
 			fs.mkdirSync(this.dir);
 		}
@@ -190,7 +190,7 @@ export class Contract {
 				});
 				break;
 		}
-		this.write(contractCode);
+		this.print(contractCode);
 		console.log(`Contract created : ${this.dir}`);
 	}
 
@@ -248,11 +248,20 @@ export class Contract {
 		this.deployedInstance = contract;
 	}
 
-	async mint(address: string) {
+	async write(method: string, args: any[]) {
 		if (!this.deployedInstance) {
 			throw new Error("Contract has not been deployed");
 		}
-		await this.deployedInstance.functions.safeMint(address);
-		console.log("New Token Minted");
+		const tx = await this.deployedInstance[method](...args);
+		return tx;
+	}
+
+	async read(method: string, args: any[]) {
+		if (!this.deployedInstance) {
+			throw new Error("Contract has not been deployed");
+		}
+		const response = await this.deployedInstance[method](...args);
+		console.log("DEBUG", response);
+		return response;
 	}
 }

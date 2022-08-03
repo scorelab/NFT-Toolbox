@@ -32,4 +32,15 @@ nftToolbox.initContract({
 	},
 });
 
-nftToolbox.mintNFT("0x7304Cf13eEE8c8C20C6569E2024fB9079184F430");
+const demoMintNFT = async () => {
+	const address = "0x7304Cf13eEE8c8C20C6569E2024fB9079184F430";
+
+	let bal = await nftToolbox.readContract("balanceOf", [address]);
+	console.log(bal.toString());
+	const tx = await nftToolbox.writeContract("safeMint", [address]);
+	await tx.wait();
+	bal = await nftToolbox.readContract("balanceOf", [address]);
+	console.log(bal.toString());
+};
+
+demoMintNFT();

@@ -39,13 +39,20 @@ class Toolbox {
 		this.contract.deploy();
 	}
 
-	mintNFT(address: string) {
+	async readContract(method: string, args: any[]) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
 		}
-		this.contract.mint(address).then((res) => {
-			return res;
-		});
+		const res = await this.contract.read(method, args);
+		return res;
+	}
+
+	async writeContract(method: string, args: any[]) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		const tx = await this.contract.write(method, args);
+		return tx;
 	}
 }
 
