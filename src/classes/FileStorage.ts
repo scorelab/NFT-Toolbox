@@ -5,8 +5,10 @@ import { Collection } from "./Collection";
 export abstract class FileStorage {
 	abstract serviceBaseURL: string;
 	abstract uploadDirToService(dir: PathLike): Promise<string>;
+	abstract uploadFileToService(file: PathLike): Promise<string>;
+	abstract uploadJSONToService(json: string): Promise<string>;
 
-	async upload(collection: Collection) {
+	async uploadCollection(collection: Collection) {
 		console.log("Uploading Assets...");
 		const ImageFolderCID = await this.uploadDirToService(
 			path.join(collection.dir.toString(), "assets")
@@ -24,5 +26,18 @@ export abstract class FileStorage {
 		collection.setMetadataDirCID(MetaFolderCID);
 
 		console.log("Upload Complete");
+	}
+
+	async uploadSingle(asset: PathLike, metadata: any) {
+		console.log("Uploading Asset...");
+		const assetCID = await this.uploadFileToService(asset);
+
+		metadata.image = `${this.serviceBaseURL}/${assetCID}`;
+		console.log("Uploading Metadata...");
+		const metadataCID = await this.uploadJSONToService(
+			JSON.stringify(metadata)
+		);
+		console.log("Upload Complete");
+		return metadataCID;
 	}
 }

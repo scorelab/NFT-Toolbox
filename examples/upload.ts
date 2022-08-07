@@ -56,4 +56,22 @@ nftToolbox.initCollection({
 // 	password: accounts.INFURA_PASSWORD,
 // });
 
-nftToolbox.uploadNFTs();
+nftToolbox.uploadCollectionNFT();
+
+const demoSingleNftImage = path.resolve(
+	__dirname,
+	"layers",
+	"background",
+	"grey.png"
+);
+const demoSingleNftMetadata = {
+	name: "Demo Single NFT",
+	description: "This is a single demo NFT",
+	image: "",
+	attributes: [
+		{ trait_type: "color", value: "grey" },
+		{ trait_type: "rarity", value: "1" },
+	],
+};
+
+nftToolbox.uploadSingleNFT(demoSingleNftImage, demoSingleNftMetadata);

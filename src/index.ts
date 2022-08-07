@@ -1,3 +1,4 @@
+import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
 
@@ -35,14 +36,21 @@ class Toolbox {
 		}
 	}
 
-	uploadNFTs() {
+	uploadCollectionNFT() {
 		if (!this.collection) {
 			throw new Error("No Collection is initialized");
 		}
 		if (!this.fileStorageService) {
 			throw new Error("No IPFS Service is initialized");
 		}
-		this.fileStorageService.upload(this.collection);
+		this.fileStorageService.uploadCollection(this.collection);
+	}
+
+	uploadSingleNFT(asset: PathLike, metadata: any) {
+		if (!this.fileStorageService) {
+			throw new Error("No IPFS Service is initialized");
+		}
+		this.fileStorageService.uploadSingle(asset, metadata);
 	}
 }
 
