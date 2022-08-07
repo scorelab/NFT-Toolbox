@@ -40,4 +40,16 @@ export class Pinata extends FileStorage {
 			throw new Error("Upload Failed");
 		}
 	}
+
+	async uploadFileToService(file: fs.PathLike) {
+		const result = await this.pinataObj.pinFileToIPFS(file.toString());
+		const cid = result.IpfsHash;
+		return cid;
+	}
+
+	async uploadJSONToService(json: string) {
+		const result = await this.pinataObj.pinFileToIPFS(json);
+		const cid = result.IpfsHash;
+		return cid;
+	}
 }

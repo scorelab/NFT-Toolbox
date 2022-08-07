@@ -19,4 +19,17 @@ export class NFTstorage extends FileStorage {
 		const cid = await this.nftStorageClient.storeDirectory(files);
 		return cid;
 	}
+
+	async uploadFileToService(file: fs.PathLike) {
+		const fileBinary = fs.readFileSync(file);
+		const fileBlob = new Blob([fileBinary]);
+		const cid = await this.nftStorageClient.storeBlob(fileBlob);
+		return cid;
+	}
+
+	async uploadJSONToService(json: string) {
+		const fileBlob = new Blob([json]);
+		const cid = await this.nftStorageClient.storeBlob(fileBlob);
+		return cid;
+	}
 }
