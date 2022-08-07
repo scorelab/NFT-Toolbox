@@ -44,4 +44,42 @@ export class Storj extends FileStorage {
 		);
 		return dirResponse.Hash;
 	}
+
+	async uploadFileToService(filepath: fs.PathLike) {
+		let formData = new FormData();
+		formData.append(`file`, fs.createReadStream(filepath));
+
+		// Execute the Upload request to the Storj IPFS pinning service
+		const response = await axios.post(this.URL, formData, {
+			auth: this.AUTH,
+			headers: {
+				"Content-Type": `multipart/form-data; boundary= ${formData.getBoundary()}`,
+			},
+			// These arguments remove any client-side upload size restrictions
+			maxContentLength: Infinity,
+			maxBodyLength: Infinity,
+		});
+		const responseArray = ndjsonParser(response.data);
+		const dirResponse = responseArray[0];
+		return dirResponse.Hash;
+	}
+
+	async uploadJSONToService(json: string) {
+		let formData = new FormData();
+		formData.append(`file`, json);
+
+		// Execute the Upload request to the Storj IPFS pinning service
+		const response = await axios.post(this.URL, formData, {
+			auth: this.AUTH,
+			headers: {
+				"Content-Type": `multipart/form-data; boundary= ${formData.getBoundary()}`,
+			},
+			// These arguments remove any client-side upload size restrictions
+			maxContentLength: Infinity,
+			maxBodyLength: Infinity,
+		});
+		const responseArray = ndjsonParser(response.data);
+		const dirResponse = responseArray[0];
+		return dirResponse.Hash;
+	}
 }
