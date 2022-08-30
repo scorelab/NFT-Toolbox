@@ -38,7 +38,7 @@ class Toolbox {
 				if (!attr.wallet || !attr.currency) {
 					throw new Error("Arweave Currency and Wallet required");
 				}
-				execSync("npm install @bundlr-network/client", {
+				execSync("npm install @bundlr-network/client bignumber.js", {
 					stdio: [0, 1, 2],
 				});
 				this.fileStorageService = new Arweave(
@@ -62,11 +62,15 @@ class Toolbox {
 		this.fileStorageService.uploadCollection(this.collection);
 	}
 
-	uploadSingleNFT(asset: PathLike, metadata: any) {
+	async uploadSingleNFT(asset: PathLike, metadata: any) {
 		if (!this.fileStorageService) {
 			throw new Error("No IPFS Service is initialized");
 		}
-		this.fileStorageService.uploadSingle(asset, metadata);
+		const response = await this.fileStorageService.uploadSingle(
+			asset,
+			metadata
+		);
+		return response;
 	}
 }
 

@@ -38,6 +38,6 @@ export abstract class FileStorage {
 			JSON.stringify(metadata)
 		);
 		console.log("Upload Complete");
-		return metadataCID;
+		return { metadataCID, assetCID };
 	}
 }

@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import path from "path";
 import { nftToolbox } from "../src/index";
 
@@ -23,6 +22,32 @@ nftToolbox.initCollection({
 	description: "This is a demo collection for NFT Toolbox",
 });
 
+const demoSingleNftImage = path.resolve(
+	__dirname,
+	"layers",
+	"background",
+	"grey.png"
+);
+const demoSingleNftMetadata = {
+	name: "Demo Single NFT",
+	description: "This is a single demo NFT",
+	image: "",
+	attributes: [
+		{ trait_type: "color", value: "grey" },
+		{ trait_type: "rarity", value: "1" },
+	],
+};
+
+const uploadSingleExample = async function () {
+	const res = await nftToolbox.uploadSingleNFT(
+		demoSingleNftImage,
+		demoSingleNftMetadata
+	);
+	console.log(res);
+};
+
+///////////////////////////////////////////////////////////////////////////////////
+
 // nftToolbox.initFileStorageService({
 // 	service: "pinata",
 // 	key: accounts.PINATA_KEY,
@@ -40,11 +65,11 @@ nftToolbox.initCollection({
 // 	password: accounts.STORJ_PASSWORD,
 // });
 
-// nftToolbox.initFileStorageService({
-// 	service: "arweave",
-// 	currency: accounts.ARWEAVE_CURRENCY,
-// 	wallet: accounts.ARWEAVE_WALLET,
-// });
+nftToolbox.initFileStorageService({
+	service: "arweave",
+	currency: accounts.ARWEAVE_CURRENCY,
+	wallet: accounts.ARWEAVE_WALLET,
+});
 
 // nftToolbox.initFileStorageService({
 // 	service: "infura",
@@ -52,22 +77,8 @@ nftToolbox.initCollection({
 // 	password: accounts.INFURA_PASSWORD,
 // });
 
-nftToolbox.uploadCollectionNFT();
+///////////////////////////////////////////////////////////////////////////////////
 
-const demoSingleNftImage = path.resolve(
-	__dirname,
-	"layers",
-	"background",
-	"grey.png"
-);
-const demoSingleNftMetadata = {
-	name: "Demo Single NFT",
-	description: "This is a single demo NFT",
-	image: "",
-	attributes: [
-		{ trait_type: "color", value: "grey" },
-		{ trait_type: "rarity", value: "1" },
-	],
-};
+// nftToolbox.uploadCollectionNFT();
 
-nftToolbox.uploadSingleNFT(demoSingleNftImage, demoSingleNftMetadata);
+uploadSingleExample();
