@@ -2,16 +2,13 @@ import path from "path";
 import { nftToolbox } from "../src/index";
 
 const accounts = {
-	PINATA_KEY: "c035310605551a107fb5",
-	PINATA_SECURITY:
-		"23bfd7200d9c4376738ee232bfc06baf533b2d53c75f524f6461d7f7d8fa25b6",
-	NFT_STORAGE_KEY:
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGIwNzFBZTU0Q0RFNmQ2MDZBNDU2N0Y2QzE2NzQ3NDNBN2E4NzdlQjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NTkyMTY1Mzg5OCwibmFtZSI6Ik5GVCBUb29sYm94IERlbW8ifQ.sKGyyKdhvsfFhB399DNrHJtJcS5vLeAvWnAdAziuc3I",
+	PINATA_KEY: "PINATA_KEY",
+	PINATA_SECURITY: "PINATA_SECURITY",
+	NFT_STORAGE_KEY: "NFT_STORAGE_KEY",
 	STORJ_USERNAME: "username",
 	STORJ_PASSWORD: "password",
-	ARWEAVE_CURRENCY: "matic",
-	ARWEAVE_WALLET:
-		"e70c22ca3f3c257f35cc91e64e4e84847fc3f5ca6fe9d775a5254c8ea27a9d3e",
+	ARWEAVE_CURRENCY: "currency",
+	ARWEAVE_WALLET: "private_key",
 	INFURA_USERNAME: "username",
 	INFURA_PASSWORD: "password",
 };
@@ -21,6 +18,11 @@ nftToolbox.initCollection({
 	dir: path.join(__dirname, "Demo Collection"),
 	description: "This is a demo collection for NFT Toolbox",
 });
+
+const uploadCollectionExample = async function () {
+	const { assetCID, metadataCID } = await nftToolbox.uploadCollectionNFT();
+	console.log(assetCID, metadataCID);
+};
 
 const demoSingleNftImage = path.resolve(
 	__dirname,
@@ -65,11 +67,11 @@ const uploadSingleExample = async function () {
 // 	password: accounts.STORJ_PASSWORD,
 // });
 
-nftToolbox.initFileStorageService({
-	service: "arweave",
-	currency: accounts.ARWEAVE_CURRENCY,
-	wallet: accounts.ARWEAVE_WALLET,
-});
+// nftToolbox.initFileStorageService({
+// 	service: "arweave",
+// 	currency: accounts.ARWEAVE_CURRENCY,
+// 	wallet: accounts.ARWEAVE_WALLET,
+// });
 
 // nftToolbox.initFileStorageService({
 // 	service: "infura",
@@ -79,6 +81,6 @@ nftToolbox.initFileStorageService({
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-// nftToolbox.uploadCollectionNFT();
+uploadCollectionExample();
 
 uploadSingleExample();

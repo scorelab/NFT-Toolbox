@@ -26,6 +26,7 @@ export abstract class FileStorage {
 		collection.setMetadataDirCID(MetaFolderCID);
 
 		console.log("Upload Complete");
+		return { metadataCID: MetaFolderCID, assetCID: ImageFolderCID };
 	}
 
 	async uploadSingle(asset: PathLike, metadata: any) {

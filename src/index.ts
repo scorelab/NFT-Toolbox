@@ -52,14 +52,17 @@ class Toolbox {
 		}
 	}
 
-	uploadCollectionNFT() {
+	async uploadCollectionNFT() {
 		if (!this.collection) {
 			throw new Error("No Collection is initialized");
 		}
 		if (!this.fileStorageService) {
 			throw new Error("No IPFS Service is initialized");
 		}
-		this.fileStorageService.uploadCollection(this.collection);
+		const response = await this.fileStorageService.uploadCollection(
+			this.collection
+		);
+		return response;
 	}
 
 	async uploadSingleNFT(asset: PathLike, metadata: any) {
