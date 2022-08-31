@@ -10,32 +10,32 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: 'Complete Workflow',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        NFT Toolbox provides all the functionalities required in 
+        the process of creating NFTs.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Multiple Platforms',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        NFT Toolbox does not impose a platform for File Storage. You get to choose
+        according to your requirements.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Sweet and Simple',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        NFT Toolbox has specific functions for specific tasks in the NFT creation
+        workflow. No complications.
       </>
     ),
   },
