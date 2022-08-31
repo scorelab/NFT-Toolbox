@@ -38,7 +38,7 @@ Examples of the two permissible file names would be _Black.png_ and _White#10.pn
 
 ## Initialize a Collection
 
-After [Importing the package](/docs/intro#import-it-in-your-project),
+**After [Importing the package](/docs/intro#import-it-in-your-project),**
 
 Call the `initCollection` function to initialize a Collection with the basic details.
 
@@ -49,8 +49,6 @@ nftToolbox.initCollection({
 	description: "Short description for Your Collecion",
 });
 ```
-
-The generated Images and Metadata files will be created in the directory path provided as `dir`. Present contents in the directory if any will be deleted.
 
 ## Provide a Schema
 
@@ -106,4 +104,12 @@ The attributes of **Schema** object are described below.
 | `rarityDefault`           | integer | Default value of Rarity Weight to be used for images when not specified in file name  |
 | `shuffleIndexes`          | boolean | Generate Indexes in a shuffled order                                                  |
 
-The `generateNFTs` function creates Image and Metadata files in the Collection Directory.
+:::note
+The `generateNFTs` function creates Image and Metadata files in `assets` and `metadata`
+directories inside the Collection Directory.
+:::
+
+:::caution
+Images and Metadata files will be created by `generateNFTs` function in the directory path provided as
+`dir` to `initCollection` function. Present contents in the directory if any will be deleted.
+:::

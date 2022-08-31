@@ -6,32 +6,34 @@ sidebar_position: 1
 
 Welcome to NFT Toolbox Documentation!
 
-NFT Toolbox provides simplistic implementations for the various functionalities that are a part of an 
+NFT Toolbox provides simplistic implementations for the various functionalities that are a part of an
 NFT creation process.
 The following functionalities are currently supported :
- - Generation of NFT Collection Images and Metadata files from Layer Images
- - Uploading Asset and Metadata files to multiple decentralized file storage platforms
- - Programatically generating Solidity Smart Contracts for NFTs for Ethereum compatible blockchains
- - Deploying Smart Contracts to Ethereum compatible blockchain networks
- - Interacting with Smart Contracts on Ethereum compatible blockchain networks
+
+-   Generating Images and Metadata files for an NFT Collection from Layer Images
+-   Uploading Asset and Metadata files to multiple decentralized file storage platforms
+-   Programatically generating Solidity Smart Contracts for NFTs for Ethereum compatible blockchains
+-   Deploying Smart Contracts to Ethereum compatible blockchain networks
+-   Interacting with Smart Contracts on Ethereum compatible blockchain networks
 
 ### Install the package
 
 Navigate to your [Node.js](https://nodejs.org/en/download/) project and run
- ```bash
- npm install nft-toolbox
- ```
 
- ### Import it in your project
+```bash
+npm install nft-toolbox
+```
 
- The package has a Toolbox Object as the only export. It contains all the functionalities you will 
- need in your NFT creation process.
+### Import it in your project
 
- ```javascript
+The package has a Toolbox Object as the only export. It contains all the functionalities you will
+need in your NFT creation process.
+
+```javascript
 import { nftToolbox } from "nft-toolbox";
- ```
+```
 
- ### Ready to go!
+**Ready to go!**
 
- You are all set to use **NFT Toolbox** in your project.
- Read the subsequent sections for details of the functionalities.
+You are all set to use **NFT Toolbox** in your project.
+Read the subsequent sections for details of the functionalities.
