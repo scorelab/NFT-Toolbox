@@ -54,7 +54,7 @@ NFT Toolbox uses [Bundlr](https://bundlr.network/) to upload files to Arweave. S
 
 Examples of initializing File Storage are as follows.
 
-After [Importing the package](/docs/intro#import-it-in-your-project),
+**After [Importing the package](/docs/intro#import-it-in-your-project),**
 
 -   NFT.Storage
 

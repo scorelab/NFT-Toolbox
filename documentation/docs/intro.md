@@ -12,7 +12,7 @@ The following functionalities are currently supported :
 
 -   Generating Images and Metadata files for an NFT Collection from Layer Images
 -   Uploading Asset and Metadata files to multiple decentralized file storage platforms
--   Programatically generating Solidity Smart Contracts for NFTs for Ethereum compatible blockchains
+-   Drafting (Programatically generating) Solidity Smart Contracts for NFTs for Ethereum compatible blockchains
 -   Deploying Smart Contracts to Ethereum compatible blockchain networks
 -   Interacting with Smart Contracts on Ethereum compatible blockchain networks
 
