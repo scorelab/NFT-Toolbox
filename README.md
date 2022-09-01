@@ -30,3 +30,16 @@ Run Tests
 ```
 npm test
 ```
+5. Editing Documentation
+
+Documentation has been generated using [Docusaurus](https://docusaurus.io/).
+
+The Docusaurus project is present in `documentation` directory. Install the dependencies
+```
+cd documentation
+npm install
+```
+Run the development live server for Documentation
+```
+npm start
+```
