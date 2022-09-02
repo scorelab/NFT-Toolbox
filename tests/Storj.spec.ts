@@ -6,6 +6,7 @@ import nock from "nock";
 import path from "path";
 import { Storj } from "../src/classes/Storj";
 import { Collection } from "../src/classes/Collection";
+import { readFileSync } from "fs";
 
 const expect = chai.expect;
 
@@ -28,8 +29,33 @@ const TEST_FAKE_DIR_STRUCTURE = {
 		},
 	},
 };
+const TEST_API_RESPONSES = [
+	{
+		Hash: "randomCID",
+		Name: TEST_COL_PATH.toString().split("\\").join("/"),
+	},
+	{
+		Hash: "randomCID",
+		Name: path
+			.join(TEST_COL_PATH, "metadata")
+			.toString()
+			.split("\\")
+			.join("/"),
+	},
+	{
+		Hash: "randomCID",
+		Name: path
+			.join(TEST_COL_PATH, "metadata", "1.json")
+			.toString()
+			.split("\\")
+			.join("/"),
+	},
+];
+
 const TEST_API_RESPONSE = {
-	cid: "randomCID",
+	ndjsonRes: TEST_API_RESPONSES.map((obj) => JSON.stringify(obj)).join("\n"),
+	jsonRes: TEST_API_RESPONSES[0],
+	Hash: "randomCID",
 };
 
 const testCol = new Collection({
@@ -51,13 +77,39 @@ describe("Test suite for Upload To Storj API", () => {
 		mock.restore();
 		nock.cleanAll();
 	});
-	it("Checking POST request", async function () {
+	it("Checking POST request in uploadDirToService", async function () {
 		const scope = nock("https://www.storj-ipfs.com")
 			.post("/api/v0/add")
-			.reply(200, TEST_API_RESPONSE);
+			.reply(200, TEST_API_RESPONSE.ndjsonRes);
 
 		await testStorjObj.uploadDirToService(
 			path.join(TEST_COL_PATH, "metadata")
+		);
+
+		expect(scope.isDone()).to.be.true;
+	});
+
+	it("Checking POST request in uploadFileToService", async function () {
+		const scope = nock("https://www.storj-ipfs.com")
+			.post("/api/v0/add")
+			.reply(200, TEST_API_RESPONSE.jsonRes);
+
+		await testStorjObj.uploadFileToService(
+			path.join(TEST_COL_PATH, "assets", "1.png")
+		);
+
+		expect(scope.isDone()).to.be.true;
+	});
+
+	it("Checking POST request in uploadJSONToService", async function () {
+		const scope = nock("https://www.storj-ipfs.com")
+			.post("/api/v0/add")
+			.reply(200, TEST_API_RESPONSE.jsonRes);
+
+		await testStorjObj.uploadJSONToService(
+			readFileSync(
+				path.join(TEST_COL_PATH, "metadata", "1.json")
+			).toString()
 		);
 
 		expect(scope.isDone()).to.be.true;
@@ -77,14 +129,43 @@ describe("Test suite for Upload Method", () => {
 	it("Checking Internal UploadDirToService Calls", async function () {
 		var fake = sinon.fake.returns(
 			new Promise<string>(async (resolve) => {
-				const cid = TEST_API_RESPONSE.cid;
+				const cid = TEST_API_RESPONSE.Hash;
 				resolve(cid);
 			})
 		);
 		sinon.replace(testStorjObj, "uploadDirToService", fake);
 
-		await testStorjObj.upload(testCol);
+		await testStorjObj.uploadCollection(testCol);
 
 		expect(fake.calledTwice).to.be.true;
+	});
+
+	it("Checking Internal UploadFileToService and UploadJSONToService Calls", async function () {
+		var fakeFile = sinon.fake.returns(
+			new Promise<string>(async (resolve) => {
+				const cid = TEST_API_RESPONSE.Hash;
+				resolve(cid);
+			})
+		);
+		var fakeJSON = sinon.fake.returns(
+			new Promise<string>(async (resolve) => {
+				const cid = TEST_API_RESPONSE.Hash;
+				resolve(cid);
+			})
+		);
+		sinon.replace(testStorjObj, "uploadFileToService", fakeFile);
+		sinon.replace(testStorjObj, "uploadJSONToService", fakeJSON);
+
+		await testStorjObj.uploadSingle(
+			path.join(TEST_COL_PATH, "assets", "1.png"),
+			JSON.parse(
+				readFileSync(
+					path.join(TEST_COL_PATH, "metadata", "1.json")
+				).toString()
+			)
+		);
+
+		expect(fakeFile.calledOnce).to.be.true;
+		expect(fakeJSON.calledOnce).to.be.true;
 	});
 });

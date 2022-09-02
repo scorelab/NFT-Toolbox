@@ -60,12 +60,11 @@ export class Infura extends FileStorage {
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
-		const responseArray = ndjsonParser(response.data);
-		const dirResponse = responseArray[0];
-		return dirResponse.Hash;
+		return response.data.Hash;
 	}
 
 	async uploadJSONToService(json: string) {
+		console.log("DEBUG", json, typeof json);
 		let formData = new FormData();
 		formData.append(`file`, json);
 
@@ -79,8 +78,6 @@ export class Infura extends FileStorage {
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
-		const responseArray = ndjsonParser(response.data);
-		const dirResponse = responseArray[0];
-		return dirResponse.Hash;
+		return response.data.Hash;
 	}
 }

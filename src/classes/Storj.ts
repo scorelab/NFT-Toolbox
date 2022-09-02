@@ -8,6 +8,7 @@ const ndjsonParser = require("ndjson-parse");
 
 export class Storj extends FileStorage {
 	serviceBaseURL = "ipfs:/";
+
 	URL = `https://www.storj-ipfs.com/api/v0/add`;
 	AUTH: {
 		username: string;
@@ -59,12 +60,11 @@ export class Storj extends FileStorage {
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
-		const responseArray = ndjsonParser(response.data);
-		const dirResponse = responseArray[0];
-		return dirResponse.Hash;
+		return response.data.Hash;
 	}
 
 	async uploadJSONToService(json: string) {
+		console.log("DEBUG", json, typeof json);
 		let formData = new FormData();
 		formData.append(`file`, json);
 
@@ -78,8 +78,6 @@ export class Storj extends FileStorage {
 			maxContentLength: Infinity,
 			maxBodyLength: Infinity,
 		});
-		const responseArray = ndjsonParser(response.data);
-		const dirResponse = responseArray[0];
-		return dirResponse.Hash;
+		return response.data.Hash;
 	}
 }
