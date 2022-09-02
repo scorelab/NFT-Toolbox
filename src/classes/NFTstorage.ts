@@ -1,5 +1,5 @@
 import fs from "fs";
-import { NFTStorage } from "nft.storage";
+import { NFTStorage, Blob } from "nft.storage";
 import { filesFromPath } from "files-from-path";
 import { FileStorage } from "./FileStorage";
 

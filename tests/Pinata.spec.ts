@@ -6,6 +6,7 @@ import nock from "nock";
 import path from "path";
 import { Pinata } from "../src/classes/Pinata";
 import { Collection } from "../src/classes/Collection";
+import { readFileSync } from "fs";
 
 const expect = chai.expect;
 
@@ -30,7 +31,7 @@ const TEST_FAKE_DIR_STRUCTURE = {
 	},
 };
 const TEST_API_RESPONSE = {
-	IpfsHash: "randomCID",
+	id: "randomCID",
 };
 
 const testCol = new Collection({
@@ -52,7 +53,8 @@ describe("Test suite for Upload To Pinata API", () => {
 		mock.restore();
 		nock.cleanAll();
 	});
-	it("Checking POST request", async function () {
+
+	it("Checking POST request in UploadDirToService", async function () {
 		const scope = nock("https://api.pinata.cloud")
 			.post("/pinning/pinFileToIPFS")
 			.reply(200, TEST_API_RESPONSE);
@@ -63,9 +65,35 @@ describe("Test suite for Upload To Pinata API", () => {
 
 		expect(scope.isDone()).to.be.true;
 	});
+
+	it("Checking POST request in UploadFileToService", async function () {
+		const scope = nock("https://api.pinata.cloud")
+			.post("/pinning/pinFileToIPFS")
+			.reply(200, TEST_API_RESPONSE);
+
+		await testPinataObj.uploadFileToService(
+			path.join(TEST_COL_PATH, "assets", "1.png")
+		);
+
+		expect(scope.isDone()).to.be.true;
+	});
+
+	it("Checking POST request in UploadJSONToService", async function () {
+		const scope = nock("https://api.pinata.cloud")
+			.post("/pinning/pinJSONToIPFS")
+			.reply(200, TEST_API_RESPONSE);
+
+		await testPinataObj.uploadJSONToService(
+			readFileSync(
+				path.join(TEST_COL_PATH, "metadata", "1.json")
+			).toString()
+		);
+
+		expect(scope.isDone()).to.be.true;
+	});
 });
 
-describe("Test suite for Upload Method", () => {
+describe("Test suite for Upload Methods", () => {
 	beforeEach(() => {
 		mock(TEST_FAKE_DIR_STRUCTURE, {
 			createCwd: true,
@@ -75,17 +103,47 @@ describe("Test suite for Upload Method", () => {
 	afterEach(() => {
 		mock.restore();
 	});
+
 	it("Checking Internal UploadDirToService Calls", async function () {
 		var fake = sinon.fake.returns(
 			new Promise<string>(async (resolve) => {
-				const cid = TEST_API_RESPONSE.IpfsHash;
+				const cid = TEST_API_RESPONSE.id;
 				resolve(cid);
 			})
 		);
 		sinon.replace(testPinataObj, "uploadDirToService", fake);
 
-		await testPinataObj.upload(testCol);
+		await testPinataObj.uploadCollection(testCol);
 
 		expect(fake.calledTwice).to.be.true;
+	});
+
+	it("Checking Internal UploadFileToService Calls", async function () {
+		var fakeFile = sinon.fake.returns(
+			new Promise<string>(async (resolve) => {
+				const cid = TEST_API_RESPONSE.id;
+				resolve(cid);
+			})
+		);
+		var fakeJSON = sinon.fake.returns(
+			new Promise<string>(async (resolve) => {
+				const cid = TEST_API_RESPONSE.id;
+				resolve(cid);
+			})
+		);
+		sinon.replace(testPinataObj, "uploadFileToService", fakeFile);
+		sinon.replace(testPinataObj, "uploadJSONToService", fakeJSON);
+
+		await testPinataObj.uploadSingle(
+			path.join(TEST_COL_PATH, "assets", "1.png"),
+			JSON.parse(
+				readFileSync(
+					path.join(TEST_COL_PATH, "metadata", "1.json")
+				).toString()
+			)
+		);
+
+		expect(fakeFile.calledOnce).to.be.true;
+		expect(fakeJSON.calledOnce).to.be.true;
 	});
 });

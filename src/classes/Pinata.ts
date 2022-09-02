@@ -42,13 +42,14 @@ export class Pinata extends FileStorage {
 	}
 
 	async uploadFileToService(file: fs.PathLike) {
-		const result = await this.pinataObj.pinFileToIPFS(file.toString());
+		const readStream = fs.createReadStream(file);
+		const result = await this.pinataObj.pinFileToIPFS(readStream);
 		const cid = result.IpfsHash;
 		return cid;
 	}
 
 	async uploadJSONToService(json: string) {
-		const result = await this.pinataObj.pinFileToIPFS(json);
+		const result = await this.pinataObj.pinJSONToIPFS(JSON.parse(json));
 		const cid = result.IpfsHash;
 		return cid;
 	}
