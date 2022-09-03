@@ -261,7 +261,6 @@ export class Contract {
 			throw new Error("Contract has not been deployed");
 		}
 		const response = await this.deployedInstance[method](...args);
-		console.log("DEBUG", response);
 		return response;
 	}
 }
