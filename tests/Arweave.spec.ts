@@ -2,27 +2,19 @@ import { describe } from "mocha";
 import chai from "chai";
 import sinon from "sinon";
 import mock from "mock-fs";
-import nock from "nock";
 import path from "path";
 import { Arweave } from "../src/classes/Arweave";
 import { Collection } from "../src/classes/Collection";
+import { createReadStream, readFileSync } from "fs";
 
 const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_ARWEAVE_WALLET = {
-	kty: "",
-	n: "",
-	e: "",
-	d: "",
-	p: "",
-	q: "",
-	dp: "",
-	dq: "",
-	qi: "",
-};
-
+const TEST_ARWEAVE_CURRENCY = "arweave";
+const TEST_ARWEAVE_WALLET = JSON.parse(
+	readFileSync(path.join(__dirname, "wallet.json")).toString()
+);
 const TEST_FAKE_DIR_STRUCTURE = {
 	fake_dir: {
 		"Demo Collection": {
@@ -38,7 +30,7 @@ const TEST_FAKE_DIR_STRUCTURE = {
 	},
 };
 const TEST_API_RESPONSE = {
-	Hash: "randomCID",
+	data: { id: "randomCID" },
 };
 
 const testCol = new Collection({
@@ -47,36 +39,74 @@ const testCol = new Collection({
 	description: "This is a demo collection for NFT Toolbox",
 });
 
-const testArweaveObj = new Arweave(TEST_ARWEAVE_WALLET);
+const testArweaveObj = new Arweave(TEST_ARWEAVE_CURRENCY, TEST_ARWEAVE_WALLET);
 
-describe.skip("Test suite for Upload To Arweave API", () => {
+describe("Test suite for Upload with Bundlr SDK", () => {
 	beforeEach(() => {
 		mock(TEST_FAKE_DIR_STRUCTURE, {
 			createCwd: true,
 			createTmp: true,
 		});
+		var fakeFund = sinon.fake.resolves(null);
+		sinon.replace(testArweaveObj, "fundBundlr", fakeFund);
 	});
 	afterEach(() => {
 		mock.restore();
-		nock.cleanAll();
+		sinon.restore();
 	});
-	it("Checking POST request", async function () {
-		const scope = nock("http://node1.bundlr.network")
-			.filteringPath((path) => "/")
-			.post("/")
-			.reply(200, TEST_API_RESPONSE);
-
-		// mock-fs does not support fs.opendir()
-		// Reference: https://github.com/tschaub/mock-fs/issues/319
-		// Bundlr upload method utilizes fs.opendir internally and is throwing while testing
-		// "Error: ENOENT: no such file or directory, opendir 'C:\Users\sadas\Desktop\NFT-Toolbox\fake_dir\Demo Collection\metadata'"
-		// Skipping this Test Suite
+	it("Checking SDK function call in uploadDirToService", async function () {
+		var fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		sinon.replace(testArweaveObj.CONNECTION.uploader, "uploadFolder", fake);
 
 		await testArweaveObj.uploadDirToService(
 			path.join(TEST_COL_PATH, "metadata")
 		);
 
-		expect(scope.isDone()).to.be.true;
+		expect(
+			fake.calledOnceWith(path.join(TEST_COL_PATH, "metadata").toString())
+		).to.be.true;
+	});
+	it("Checking SDK function call in uploadFileToService", async function () {
+		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
+		sinon.replace(
+			testArweaveObj.CONNECTION.uploader.chunkedUploader,
+			"uploadData",
+			fake
+		);
+
+		await testArweaveObj.uploadFileToService(
+			path.join(TEST_COL_PATH, "assets", "1.png")
+		);
+
+		expect(
+			fake.calledOnceWith(
+				createReadStream(path.join(TEST_COL_PATH, "assets", "1.png"))
+			)
+		).to.be.true;
+	});
+	it("Checking SDK function call in uploadJSONToService", async function () {
+		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
+		sinon.replace(
+			testArweaveObj.CONNECTION.uploader.chunkedUploader,
+			"uploadData",
+			fake
+		);
+
+		await testArweaveObj.uploadJSONToService(
+			readFileSync(
+				path.join(TEST_COL_PATH, "metadata", "1.json")
+			).toString()
+		);
+
+		expect(
+			fake.calledOnceWith(
+				Buffer.from(
+					readFileSync(
+						path.join(TEST_COL_PATH, "metadata", "1.json")
+					).toString()
+				)
+			)
+		).to.be.true;
 	});
 });
 
@@ -91,16 +121,29 @@ describe("Test suite for Upload Method", () => {
 		mock.restore();
 	});
 	it("Checking Internal UploadDirToService Calls", async function () {
-		var fake = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
-				const cid = TEST_API_RESPONSE.Hash;
-				resolve(cid);
-			})
-		);
+		var fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
 		sinon.replace(testArweaveObj, "uploadDirToService", fake);
 
-		await testArweaveObj.upload(testCol);
+		await testArweaveObj.uploadCollection(testCol);
 
 		expect(fake.calledTwice).to.be.true;
+	});
+	it("Checking Internal UploadFileToService and UploadJSONToService Calls", async function () {
+		var fakeFile = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		var fakeJSON = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		sinon.replace(testArweaveObj, "uploadFileToService", fakeFile);
+		sinon.replace(testArweaveObj, "uploadJSONToService", fakeJSON);
+
+		await testArweaveObj.uploadSingle(
+			path.join(TEST_COL_PATH, "assets", "1.png"),
+			JSON.parse(
+				readFileSync(
+					path.join(TEST_COL_PATH, "metadata", "1.json")
+				).toString()
+			)
+		);
+
+		expect(fakeFile.calledOnce).to.be.true;
+		expect(fakeJSON.calledOnce).to.be.true;
 	});
 });

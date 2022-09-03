@@ -2,7 +2,7 @@ import fs from "fs";
 import Bundlr from "@bundlr-network/client";
 import { FileStorage } from "./FileStorage";
 import path from "path";
-import BigNumber from "bignumber.js";
+const BigNumber = require("bignumber.js");
 
 export class Arweave extends FileStorage {
 	serviceBaseURL = "ar:/";
@@ -28,7 +28,7 @@ export class Arweave extends FileStorage {
 
 		if (adjustedPrice.isGreaterThan(balance)) {
 			console.log("Funding Bundlr Node");
-			console.log(adjustedPrice.toString(), balance.toString());
+			// console.log(adjustedPrice.toString(), balance.toString());
 			await this.CONNECTION.fund(
 				adjustedPrice.minus(balance).integerValue(BigNumber.ROUND_CEIL)
 			);
