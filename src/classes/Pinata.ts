@@ -20,7 +20,7 @@ export class Pinata extends FileStorage {
 			});
 	}
 
-	async uploadDirToService(dir: fs.PathLike) {
+	async uploadDirToService(dir: fs.PathLike): Promise<string> {
 		// PinataSDK is pinning entire absolute path to IPFS instead of One Folder
 		// See issue https://github.com/PinataCloud/Pinata-SDK/issues/85
 
@@ -41,14 +41,14 @@ export class Pinata extends FileStorage {
 		}
 	}
 
-	async uploadFileToService(file: fs.PathLike) {
+	async uploadFileToService(file: fs.PathLike): Promise<string> {
 		const readStream = fs.createReadStream(file);
 		const result = await this.pinataObj.pinFileToIPFS(readStream);
 		const cid = result.IpfsHash;
 		return cid;
 	}
 
-	async uploadJSONToService(json: string) {
+	async uploadJSONToService(json: string): Promise<string> {
 		const result = await this.pinataObj.pinJSONToIPFS(JSON.parse(json));
 		const cid = result.IpfsHash;
 		return cid;

@@ -12,7 +12,7 @@ export class NFTstorage extends FileStorage {
 		this.nftStorageClient = new NFTStorage({ token: key });
 	}
 
-	async uploadDirToService(dir: fs.PathLike) {
+	async uploadDirToService(dir: fs.PathLike): Promise<string> {
 		const files = filesFromPath(dir.toString(), {
 			pathPrefix: dir.toString(),
 		});
@@ -20,14 +20,14 @@ export class NFTstorage extends FileStorage {
 		return cid;
 	}
 
-	async uploadFileToService(file: fs.PathLike) {
+	async uploadFileToService(file: fs.PathLike): Promise<string> {
 		const fileBinary = fs.readFileSync(file);
 		const fileBlob = new Blob([fileBinary]);
 		const cid = await this.nftStorageClient.storeBlob(fileBlob);
 		return cid;
 	}
 
-	async uploadJSONToService(json: string) {
+	async uploadJSONToService(json: string): Promise<string> {
 		const fileBlob = new Blob([json]);
 		const cid = await this.nftStorageClient.storeBlob(fileBlob);
 		return cid;
