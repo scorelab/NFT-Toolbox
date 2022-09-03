@@ -8,7 +8,9 @@ export abstract class FileStorage {
 	abstract uploadFileToService(file: PathLike): Promise<string>;
 	abstract uploadJSONToService(json: string): Promise<string>;
 
-	async uploadCollection(collection: Collection) {
+	async uploadCollection(
+		collection: Collection
+	): Promise<{ metadataCID: string; assetCID: string }> {
 		console.log("Uploading Assets...");
 		const ImageFolderCID = await this.uploadDirToService(
 			path.join(collection.dir.toString(), "assets")
@@ -29,7 +31,10 @@ export abstract class FileStorage {
 		return { metadataCID: MetaFolderCID, assetCID: ImageFolderCID };
 	}
 
-	async uploadSingle(asset: PathLike, metadata: any) {
+	async uploadSingle(
+		asset: PathLike,
+		metadata: any
+	): Promise<{ metadataCID: string; assetCID: string }> {
 		console.log("Uploading Asset...");
 		const assetCID = await this.uploadFileToService(asset);
 

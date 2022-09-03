@@ -20,7 +20,7 @@ export class Arweave extends FileStorage {
 		// });
 	}
 
-	async fundBundlr(dataSize: number) {
+	async fundBundlr(dataSize: number): Promise<void> {
 		const price = await this.CONNECTION.getPrice(dataSize);
 		const balance = await this.CONNECTION.getLoadedBalance();
 		// Multiply by 1.1 to make sure we don't run out of funds
@@ -35,7 +35,7 @@ export class Arweave extends FileStorage {
 		}
 	}
 
-	async uploadDirToService(dir: fs.PathLike) {
+	async uploadDirToService(dir: fs.PathLike): Promise<string> {
 		const dirSize = (directory: string) => {
 			const files = fs.readdirSync(directory);
 			const stats = files.map((file) =>
@@ -54,7 +54,7 @@ export class Arweave extends FileStorage {
 		return response;
 	}
 
-	async uploadFileToService(file: fs.PathLike) {
+	async uploadFileToService(file: fs.PathLike): Promise<string> {
 		const data = fs.createReadStream(file);
 		this.fundBundlr(fs.statSync(file).size);
 
@@ -65,7 +65,7 @@ export class Arweave extends FileStorage {
 		return response.data.id;
 	}
 
-	async uploadJSONToService(json: string) {
+	async uploadJSONToService(json: string): Promise<string> {
 		const data = Buffer.from(json);
 		await this.fundBundlr(data.byteLength);
 
