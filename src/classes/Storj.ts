@@ -19,7 +19,7 @@ export class Storj extends FileStorage {
 		this.AUTH = { username, password };
 	}
 
-	async uploadDirToService(dir: fs.PathLike) {
+	async uploadDirToService(dir: fs.PathLike): Promise<string> {
 		const files = fs.readdirSync(dir);
 		let formData = new FormData();
 		files.forEach((file) => {
@@ -46,7 +46,7 @@ export class Storj extends FileStorage {
 		return dirResponse.Hash;
 	}
 
-	async uploadFileToService(filepath: fs.PathLike) {
+	async uploadFileToService(filepath: fs.PathLike): Promise<string> {
 		let formData = new FormData();
 		formData.append(`file`, fs.createReadStream(filepath));
 
@@ -63,7 +63,7 @@ export class Storj extends FileStorage {
 		return response.data.Hash;
 	}
 
-	async uploadJSONToService(json: string) {
+	async uploadJSONToService(json: string): Promise<string> {
 		console.log("DEBUG", json, typeof json);
 		let formData = new FormData();
 		formData.append(`file`, json);
