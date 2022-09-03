@@ -119,7 +119,7 @@ export class Contract {
 		}
 	}
 
-	getProvider = (config: DeployConfigs) => {
+	getProvider = (config: DeployConfigs): ethers.providers.Provider => {
 		const network = ethers.providers.getNetwork(config.network);
 		if (Object.keys(config.provider).length != 1) {
 			throw new Error(
@@ -161,7 +161,7 @@ export class Contract {
 		}
 	};
 
-	print(contractCode: string) {
+	print(contractCode: string): void {
 		if (!fs.existsSync(this.dir)) {
 			fs.mkdirSync(this.dir);
 		}
@@ -172,7 +172,7 @@ export class Contract {
 		);
 	}
 
-	draft(options: DraftOptions) {
+	draft(options: DraftOptions): void {
 		let contractCode: string;
 		switch (this.standard) {
 			case "ERC721":
@@ -194,7 +194,8 @@ export class Contract {
 		console.log(`Contract created : ${this.dir}`);
 	}
 
-	compile() {
+	// Returns parsed object of ABI
+	compile(): any {
 		function findImports(importPath: string) {
 			if (importPath.startsWith("@openzeppelin"))
 				return {
@@ -236,7 +237,7 @@ export class Contract {
 		return compilerOutput;
 	}
 
-	async deploy() {
+	async deploy(): Promise<void> {
 		const cntFactory = ethers.ContractFactory.fromSolidity(
 			this.compile().contracts.Contract[this.name],
 			this.signer
@@ -248,7 +249,10 @@ export class Contract {
 		this.deployedInstance = contract;
 	}
 
-	async write(method: string, args: any[]) {
+	async write(
+		method: string,
+		args: any[]
+	): Promise<ethers.providers.TransactionResponse> {
 		if (!this.deployedInstance) {
 			throw new Error("Contract has not been deployed");
 		}
@@ -256,7 +260,7 @@ export class Contract {
 		return tx;
 	}
 
-	async read(method: string, args: any[]) {
+	async read(method: string, args: any[]): Promise<any> {
 		if (!this.deployedInstance) {
 			throw new Error("Contract has not been deployed");
 		}
