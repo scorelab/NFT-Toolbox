@@ -54,7 +54,7 @@ interface MetadataAttribute {
 interface Metadata {
 	name: string;
 	description: string;
-	image: fs.PathLike;
+	image: string;
 	attributes: MetadataAttribute[];
 }
 
@@ -63,7 +63,10 @@ export class Collection {
 	dir: fs.PathLike;
 	description: string = "";
 
-	baseURL: string = "ipfs:/";
+	baseURL: string = "";
+	assetsDirCID: string = "";
+	metadataDirCID: string = "";
+
 	extraMetadata: object = {};
 	schema?: LayerSchema = undefined;
 	layers?: Layer[] = undefined;
@@ -84,8 +87,8 @@ export class Collection {
 			fs.rmSync(this.dir, { recursive: true });
 		}
 		fs.mkdirSync(this.dir);
-		fs.mkdirSync(`${this.dir}/metadata`);
-		fs.mkdirSync(`${this.dir}/assets`);
+		fs.mkdirSync(path.join(this.dir.toString(), "assets"));
+		fs.mkdirSync(path.join(this.dir.toString(), "metadata"));
 	}
 	readDirElements(dir: fs.PathLike) {
 		return fs.readdirSync(dir);
@@ -102,13 +105,13 @@ export class Collection {
 	}
 	saveImage(_index: number, canvasInstance: canvas.Canvas) {
 		fs.writeFileSync(
-			`${this.dir}/assets/${_index}.png`,
+			path.join(this.dir.toString(), "assets", `${_index}.png`),
 			canvasInstance.toBuffer("image/png")
 		);
 	}
 	saveMetadata(metadata: Metadata, _index: number) {
 		fs.writeFileSync(
-			`${this.dir}/metadata/${_index}.json`,
+			path.join(this.dir.toString(), "metadata", `${_index}.json`),
 			JSON.stringify(metadata, null, 2)
 		);
 	}
@@ -116,6 +119,12 @@ export class Collection {
 	// Setters
 	setBaseURL(url: string) {
 		this.baseURL = url;
+	}
+	setAssetsDirCID(cid: string) {
+		this.assetsDirCID = cid;
+	}
+	setMetadataDirCID(cid: string) {
+		this.metadataDirCID = cid;
 	}
 	setExtraMetadata(data: object) {
 		this.extraMetadata = data;
@@ -126,9 +135,9 @@ export class Collection {
 			// Functions for extracting name and rarity weight from file name
 			// File name is of the form "{name} rarityDelimiter {rarityWeight} . {extension}"
 			const cleanName = (str: string) =>
-				str.split(".").shift()?.split(rarityDelimiter).shift();
+				path.parse(str).name.split(rarityDelimiter).shift();
 			const rarityWeight = (str: string) =>
-				str.split(".").shift()?.split(rarityDelimiter).pop();
+				path.parse(str).name.split(rarityDelimiter).pop();
 
 			return this.readDirElements(dir)
 				.filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
@@ -233,7 +242,7 @@ export class Collection {
 			let tempMetadata: Metadata = {
 				name: `${this.name} #${_index}`,
 				description: this.description,
-				image: `${this.baseURL}/${_index}.png`,
+				image: `${this.baseURL}/${this.assetsDirCID}/${_index}.png`,
 				attributes: attributesList, // Dynamic list maintained in the Generation Loop
 				...this.extraMetadata,
 			};
@@ -379,5 +388,26 @@ export class Collection {
 		console.log(
 			`\n${this.schema.size} NFTs generated for ${this.name} in ${this.dir}`
 		);
+	}
+
+	updateMetadataWithCID() {
+		const metadataDir = path.join(this.dir.toString(), "metadata");
+		const files = fs.readdirSync(metadataDir);
+		if ((files && files.length) <= 0) {
+			console.log(
+				`No Metadata files were found in folder '${metadataDir}'`
+			);
+			return;
+		}
+
+		files.forEach((fileName) => {
+			const filePath = path.join(metadataDir, fileName);
+			var file_content = fs.readFileSync(filePath);
+			var content = JSON.parse(file_content.toString());
+			content.image = `${this.baseURL}/${this.assetsDirCID}/${
+				path.parse(fileName).name
+			}.png`;
+			fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+		});
 	}
 }

@@ -12,7 +12,6 @@ An npm package for seamless integration of all NFT related functionalities in We
     -   [Storj](https://landing.storj.io/permanently-pin-with-storj-dcs)
     -   [Infura](https://infura.io/product/ipfs)
     -   [Arweave](https://www.arweave.org/)
-
 3.  Draft ERC721/ERC1155 Smart Contracts from scratch with [Open Zeppelin Wizard](https://github.com/OpenZeppelin/contracts-wizard)
 4.  Deploy a Smart Contract to blockchain. Mainnets and Testnets of the following are supported are supported.
     -   [Ethereum](https://ethereum.org/): Mainnet, Ropsten, Rinkeby, Goerli, Kovan
