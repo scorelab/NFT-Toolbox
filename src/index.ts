@@ -1,9 +1,13 @@
 import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
+import { execSync } from "child_process";
+import { Infura } from "./classes/Infura";
+import { Storj } from "./classes/Storj";
 import { NFTstorage } from "./classes/NFTstorage";
 import { Pinata } from "./classes/Pinata";
 import { execSync } from "child_process";
+
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
@@ -34,6 +38,38 @@ class Toolbox {
 		wallet?: any;
 	}) {
 		switch (attr.service) {
+
+			case "storj":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Storj(
+					attr.username,
+					attr.password
+				);
+				break;
+
+			case "infura":
+				if (!attr.username) {
+					throw new Error("INFURA Username required");
+				}
+				if (!attr.password) {
+					throw new Error("INFURA Password required");
+				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Infura(
+					attr.username,
+					attr.password
+				);
+        break;
 			case "pinata":
 				if (!attr.key || !attr.secret) {
 					throw new Error("Pinata API Key and Security required");
