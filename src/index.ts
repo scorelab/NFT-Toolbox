@@ -3,6 +3,11 @@ import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
 import { execSync } from "child_process";
 import { Arweave } from "./classes/Arweave";
+import { Infura } from "./classes/Infura";
+import { Storj } from "./classes/Storj";
+import { NFTstorage } from "./classes/NFTstorage";
+import { Pinata } from "./classes/Pinata";
+import { execSync } from "child_process";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
@@ -45,6 +50,55 @@ class Toolbox {
 					attr.currency,
 					attr.wallet
 				);
+				break;
+
+			case "storj":
+				if (!attr.username) {
+					throw new Error("STORJ Username required");
+				}
+				if (!attr.password) {
+					throw new Error("STORJ Password required");
+				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Storj(
+					attr.username,
+					attr.password
+				);
+				break;
+
+			case "infura":
+				if (!attr.username) {
+					throw new Error("INFURA Username required");
+				}
+				if (!attr.password) {
+					throw new Error("INFURA Password required");
+				}
+				execSync("npm install ndjson-parse", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Infura(
+					attr.username,
+					attr.password
+				);
+        break;
+			case "pinata":
+				if (!attr.key || !attr.secret) {
+					throw new Error("Pinata API Key and Security required");
+				}
+				execSync("npm install @pinata/sdk", { stdio: [0, 1, 2] });
+				this.fileStorageService = new Pinata(attr.key, attr.secret);
+				break;
+
+			case "nft.storage":
+				if (!attr.key) {
+					throw new Error("NFT Storage API Key required");
+				}
+				execSync("npm install nft.storage files-from-path", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new NFTstorage(attr.key);
 				break;
 
 			default:

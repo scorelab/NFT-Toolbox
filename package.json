@@ -28,6 +28,7 @@
 		"files-from-path": "^0.2.6",
 		"mocha": "^10.0.0",
 		"mock-fs": "^5.1.2",
+		"ndjson-parse": "^1.0.4",
 		"nft.storage": "^6.4.1",
 		"nock": "^13.2.9",
 		"sinon": "^14.0.0",
