@@ -1,23 +1,14 @@
-import { readFileSync } from "fs";
 import path from "path";
 import { nftToolbox } from "../src/index";
 
 const accounts = {
-	PINATA_KEY: "c035310605551a107fb5",
-	PINATA_SECURITY:
-		"23bfd7200d9c4376738ee232bfc06baf533b2d53c75f524f6461d7f7d8fa25b6",
-	NFT_STORAGE_KEY:
-		"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGIwNzFBZTU0Q0RFNmQ2MDZBNDU2N0Y2QzE2NzQ3NDNBN2E4NzdlQjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NTkyMTY1Mzg5OCwibmFtZSI6Ik5GVCBUb29sYm94IERlbW8ifQ.sKGyyKdhvsfFhB399DNrHJtJcS5vLeAvWnAdAziuc3I",
+	PINATA_KEY: "PINATA_KEY",
+	PINATA_SECURITY: "PINATA_SECURITY",
+	NFT_STORAGE_KEY: "NFT_STORAGE_KEY",
 	STORJ_USERNAME: "username",
 	STORJ_PASSWORD: "password",
-	ARWEAVE_WALLET: JSON.parse(
-		readFileSync(
-			path.join(
-				__dirname,
-				"N_Y51kc4Oy72mvRhohtlwDXM_Uy3dgYikhGPSbPhR0Y.json"
-			)
-		).toString()
-	),
+	ARWEAVE_CURRENCY: "currency",
+	ARWEAVE_WALLET: "private_key",
 	INFURA_USERNAME: "username",
 	INFURA_PASSWORD: "password",
 };
@@ -27,6 +18,37 @@ nftToolbox.initCollection({
 	dir: path.join(__dirname, "Demo Collection"),
 	description: "This is a demo collection for NFT Toolbox",
 });
+
+const uploadCollectionExample = async function () {
+	const { assetCID, metadataCID } = await nftToolbox.uploadCollectionNFT();
+	console.log(assetCID, metadataCID);
+};
+
+const demoSingleNftImage = path.resolve(
+	__dirname,
+	"layers",
+	"background",
+	"grey.png"
+);
+const demoSingleNftMetadata = {
+	name: "Demo Single NFT",
+	description: "This is a single demo NFT",
+	image: "",
+	attributes: [
+		{ trait_type: "color", value: "grey" },
+		{ trait_type: "rarity", value: "1" },
+	],
+};
+
+const uploadSingleExample = async function () {
+	const res = await nftToolbox.uploadSingleNFT(
+		demoSingleNftImage,
+		demoSingleNftMetadata
+	);
+	console.log(res);
+};
+
+///////////////////////////////////////////////////////////////////////////////////
 
 // nftToolbox.initFileStorageService({
 // 	service: "pinata",
@@ -47,6 +69,7 @@ nftToolbox.initCollection({
 
 // nftToolbox.initFileStorageService({
 // 	service: "arweave",
+// 	currency: accounts.ARWEAVE_CURRENCY,
 // 	wallet: accounts.ARWEAVE_WALLET,
 // });
 
@@ -56,22 +79,8 @@ nftToolbox.initCollection({
 // 	password: accounts.INFURA_PASSWORD,
 // });
 
-nftToolbox.uploadCollectionNFT();
+///////////////////////////////////////////////////////////////////////////////////
 
-const demoSingleNftImage = path.resolve(
-	__dirname,
-	"layers",
-	"background",
-	"grey.png"
-);
-const demoSingleNftMetadata = {
-	name: "Demo Single NFT",
-	description: "This is a single demo NFT",
-	image: "",
-	attributes: [
-		{ trait_type: "color", value: "grey" },
-		{ trait_type: "rarity", value: "1" },
-	],
-};
+uploadCollectionExample();
 
-nftToolbox.uploadSingleNFT(demoSingleNftImage, demoSingleNftMetadata);
+uploadSingleExample();

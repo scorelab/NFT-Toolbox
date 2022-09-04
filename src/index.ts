@@ -2,12 +2,12 @@ import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
 import { FileStorage } from "./classes/FileStorage";
 import { execSync } from "child_process";
+import { Arweave } from "./classes/Arweave";
 import { Infura } from "./classes/Infura";
 import { Storj } from "./classes/Storj";
 import { NFTstorage } from "./classes/NFTstorage";
 import { Pinata } from "./classes/Pinata";
 import { execSync } from "child_process";
-
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
@@ -35,9 +35,22 @@ class Toolbox {
 		secret?: string;
 		username?: string;
 		password?: string;
+		currency?: string;
 		wallet?: any;
 	}) {
 		switch (attr.service) {
+			case "arweave":
+				if (!attr.wallet || !attr.currency) {
+					throw new Error("Arweave Currency and Wallet required");
+				}
+				execSync("npm install @bundlr-network/client bignumber.js", {
+					stdio: [0, 1, 2],
+				});
+				this.fileStorageService = new Arweave(
+					attr.currency,
+					attr.wallet
+				);
+				break;
 
 			case "storj":
 				if (!attr.username) {
@@ -93,21 +106,28 @@ class Toolbox {
 		}
 	}
 
-	uploadCollectionNFT() {
+	async uploadCollectionNFT() {
 		if (!this.collection) {
 			throw new Error("No Collection is initialized");
 		}
 		if (!this.fileStorageService) {
 			throw new Error("No IPFS Service is initialized");
 		}
-		this.fileStorageService.uploadCollection(this.collection);
+		const response = await this.fileStorageService.uploadCollection(
+			this.collection
+		);
+		return response;
 	}
 
-	uploadSingleNFT(asset: PathLike, metadata: any) {
+	async uploadSingleNFT(asset: PathLike, metadata: any) {
 		if (!this.fileStorageService) {
 			throw new Error("No IPFS Service is initialized");
 		}
-		this.fileStorageService.uploadSingle(asset, metadata);
+		const response = await this.fileStorageService.uploadSingle(
+			asset,
+			metadata
+		);
+		return response;
 	}
 }
 
