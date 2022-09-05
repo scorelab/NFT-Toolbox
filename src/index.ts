@@ -140,6 +140,29 @@ class Toolbox {
 		);
 		return response;
 	}
+
+	deployContract() {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.deploy();
+	}
+
+	async readContract(method: string, args: any[]) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		const res = await this.contract.read(method, args);
+		return res;
+	}
+
+	async writeContract(method: string, args: any[]) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		const tx = await this.contract.write(method, args);
+		return tx;
+	}
 }
 
 export const nftToolbox = new Toolbox();

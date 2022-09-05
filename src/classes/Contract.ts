@@ -119,7 +119,7 @@ export class Contract {
 		}
 	}
 
-	getProvider = (config: DeployConfigs) => {
+	getProvider = (config: DeployConfigs): ethers.providers.Provider => {
 		const network = ethers.providers.getNetwork(config.network);
 		if (Object.keys(config.provider).length != 1) {
 			throw new Error(
@@ -161,7 +161,7 @@ export class Contract {
 		}
 	};
 
-	write(contractCode: string) {
+	print(contractCode: string): void {
 		if (!fs.existsSync(this.dir)) {
 			fs.mkdirSync(this.dir);
 		}
@@ -172,7 +172,7 @@ export class Contract {
 		);
 	}
 
-	draft(options: DraftOptions) {
+	draft(options: DraftOptions): void {
 		let contractCode: string;
 		switch (this.standard) {
 			case "ERC721":
@@ -190,7 +190,81 @@ export class Contract {
 				});
 				break;
 		}
-		this.write(contractCode);
+		this.print(contractCode);
 		console.log(`Contract created : ${this.dir}`);
+	}
+
+	// Returns parsed object of ABI
+	compile(): any {
+		function findImports(importPath: string) {
+			if (importPath.startsWith("@openzeppelin"))
+				return {
+					contents: fs
+						.readFileSync(
+							path.join(process.cwd(), "node_modules", importPath)
+						)
+						.toString(),
+				};
+			else {
+				return { error: "OPEN ZEPPELIN IMPORT FAILED" };
+			}
+		}
+
+		const compilerInput = {
+			language: "Solidity",
+			sources: {
+				Contract: {
+					content: fs
+						.readFileSync(
+							path.join(this.dir.toString(), `${this.name}.sol`)
+						)
+						.toString(),
+				},
+			},
+			settings: {
+				outputSelection: {
+					"*": {
+						"*": ["*"],
+					},
+				},
+			},
+		};
+
+		console.log(`Compiling ${this.name}.sol`);
+		const compilerOutput = JSON.parse(
+			solc.compile(JSON.stringify(compilerInput), { import: findImports })
+		);
+		return compilerOutput;
+	}
+
+	async deploy(): Promise<void> {
+		const cntFactory = ethers.ContractFactory.fromSolidity(
+			this.compile().contracts.Contract[this.name],
+			this.signer
+		);
+		console.log(`Deploying ${this.name}.sol`);
+		const contract = await cntFactory.deploy();
+		const receipt = await contract.deployTransaction.wait();
+		console.log(`Contract Address : ${contract.address}`);
+		this.deployedInstance = contract;
+	}
+
+	async write(
+		method: string,
+		args: any[]
+	): Promise<ethers.providers.TransactionResponse> {
+		if (!this.deployedInstance) {
+			throw new Error("Contract has not been deployed");
+		}
+		const tx = await this.deployedInstance[method](...args);
+		return tx;
+	}
+
+	async read(method: string, args: any[]): Promise<any> {
+		if (!this.deployedInstance) {
+			throw new Error("Contract has not been deployed");
+		}
+		const response = await this.deployedInstance[method](...args);
+		return response;
 	}
 }
