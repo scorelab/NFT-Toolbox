@@ -1,5 +1,6 @@
 import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
+import { Contract, ContractAttributes, DraftOptions } from "./classes/Contract";
 import { FileStorage } from "./classes/FileStorage";
 import { execSync } from "child_process";
 import { Arweave } from "./classes/Arweave";
@@ -29,7 +30,17 @@ class Toolbox {
 		this.collection.generate();
 	}
 
-	initFileStorageService(attr: {
+	initContract(attr: ContractAttributes) {
+		this.contract = new Contract(attr);
+	}
+
+	draftContract(options: DraftOptions) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.draft(options);
+
+  initFileStorageService(attr: {
 		service: string;
 		key?: string;
 		secret?: string;
