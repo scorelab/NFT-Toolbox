@@ -13,15 +13,15 @@ nftToolbox.initCollection({
 });
 
 const uploadCollectionExample = async function () {
-	const { assetCID, metadataCID } = await nftToolbox.uploadCollectionNFT();
-	console.log({ assetCID, metadataCID });
+	const res = await nftToolbox.uploadCollectionNFT();
+	console.log(res);
 };
 
 const demoSingleNftImage = path.resolve(
 	__dirname,
 	"layers",
 	"background",
-	"grey.png"
+	"white.png"
 );
 const demoSingleNftMetadata = {
 	name: "Demo Single NFT",
@@ -41,7 +41,7 @@ const uploadSingleExample = async function () {
 	console.log(res);
 };
 
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////// Select ONE File Storage Platform ////////////////////////
 
 // nftToolbox.initFileStorageService({
 // 	service: "pinata",
@@ -72,7 +72,7 @@ const uploadSingleExample = async function () {
 // 	password: account.INFURA_PASSWORD,
 // });
 
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 uploadCollectionExample();
 
