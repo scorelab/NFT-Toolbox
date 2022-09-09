@@ -8,11 +8,11 @@ import { Infura } from "./classes/Infura";
 import { Storj } from "./classes/Storj";
 import { NFTstorage } from "./classes/NFTstorage";
 import { Pinata } from "./classes/Pinata";
-import { execSync } from "child_process";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
 	private fileStorageService: FileStorage | undefined = undefined;
+	private contract: Contract | undefined = undefined;
 
 	initCollection(attr: { name: string; dir: string; description?: string }) {
 		this.collection = new Collection({
@@ -30,17 +30,7 @@ class Toolbox {
 		this.collection.generate();
 	}
 
-	initContract(attr: ContractAttributes) {
-		this.contract = new Contract(attr);
-	}
-
-	draftContract(options: DraftOptions) {
-		if (!this.contract) {
-			throw new Error("No Contract is initialized");
-		}
-		this.contract.draft(options);
-
-  initFileStorageService(attr: {
+	initFileStorageService(attr: {
 		service: string;
 		key?: string;
 		secret?: string;
@@ -93,7 +83,7 @@ class Toolbox {
 					attr.username,
 					attr.password
 				);
-        break;
+				break;
 			case "pinata":
 				if (!attr.key || !attr.secret) {
 					throw new Error("Pinata API Key and Security required");
@@ -139,6 +129,17 @@ class Toolbox {
 			metadata
 		);
 		return response;
+	}
+
+	initContract(attr: ContractAttributes) {
+		this.contract = new Contract(attr);
+	}
+
+	draftContract(options: DraftOptions) {
+		if (!this.contract) {
+			throw new Error("No Contract is initialized");
+		}
+		this.contract.draft(options);
 	}
 
 	deployContract() {
