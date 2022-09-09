@@ -25,9 +25,10 @@ const testCont = new Contract({
 	connection: JSON.parse(
 		fs.readFileSync(path.join(__dirname, "connection.json")).toString()
 	),
-	deployed: JSON.parse(
-		fs.readFileSync(path.join(__dirname, "deployed.json")).toString()
-	),
+	deployed: {
+		address: "0x5009278830fB58551bD518157cBb0002eB5DC80E",
+		abi: fs.readFileSync(path.join(__dirname, "abi.json")).toString(),
+	},
 });
 
 describe("Test suite for Contract Class", () => {
