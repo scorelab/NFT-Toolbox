@@ -2,7 +2,9 @@ import { readFileSync } from "fs";
 import path from "path";
 import { nftToolbox } from "../src/index";
 
-const account = readFileSync(path.join(__dirname, "account.json"));
+const account = JSON.parse(
+	readFileSync(path.join(__dirname, "account.json")).toString()
+);
 
 nftToolbox.initCollection({
 	name: "Demo Collection",
@@ -12,7 +14,7 @@ nftToolbox.initCollection({
 
 const uploadCollectionExample = async function () {
 	const { assetCID, metadataCID } = await nftToolbox.uploadCollectionNFT();
-	console.log(assetCID, metadataCID);
+	console.log({ assetCID, metadataCID });
 };
 
 const demoSingleNftImage = path.resolve(
