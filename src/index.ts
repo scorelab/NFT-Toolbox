@@ -103,7 +103,7 @@ class Toolbox {
 				break;
 
 			default:
-				throw new Error("Unknown IPFS Service");
+				throw new Error("Unknown File Storage Service");
 		}
 	}
 
@@ -112,7 +112,7 @@ class Toolbox {
 			throw new Error("No Collection is initialized");
 		}
 		if (!this.fileStorageService) {
-			throw new Error("No IPFS Service is initialized");
+			throw new Error("No File Storage Service is initialized");
 		}
 		const response = await this.fileStorageService.uploadCollection(
 			this.collection
@@ -122,7 +122,7 @@ class Toolbox {
 
 	async uploadSingleNFT(asset: PathLike, metadata: any) {
 		if (!this.fileStorageService) {
-			throw new Error("No IPFS Service is initialized");
+			throw new Error("No File Storage Service is initialized");
 		}
 		const response = await this.fileStorageService.uploadSingle(
 			asset,

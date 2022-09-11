@@ -1,0 +1,12 @@
+{
+	"network": "",
+	"provider": {
+		"infura": {
+			"projectId": "",
+			"projectSecret": ""
+		}
+	},
+	"wallet": {
+		"privateKey": ""
+	}
+}

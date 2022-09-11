@@ -2,5 +2,3 @@ node_modules/
 .prettierrc.json
 examples/Contracts/
 examples/Demo Collection/
-examples/*.json
-tests/*.json

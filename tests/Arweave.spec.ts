@@ -11,10 +11,13 @@ const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_ARWEAVE_CURRENCY = "arweave";
-const TEST_ARWEAVE_WALLET = JSON.parse(
-	readFileSync(path.join(__dirname, "wallet.json")).toString()
+
+const test_specs = JSON.parse(
+	readFileSync(path.join(__dirname, "test_specs.json")).toString()
 );
+const TEST_ARWEAVE_CURRENCY = test_specs.ARWEAVE_CURRENCY;
+const TEST_ARWEAVE_WALLET = test_specs.ARWEAVE_WALLET;
+
 const TEST_FAKE_DIR_STRUCTURE = {
 	fake_dir: {
 		"Demo Collection": {

@@ -12,8 +12,12 @@ const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_NFT_STORAGE_KEY =
-	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweGIwNzFBZTU0Q0RFNmQ2MDZBNDU2N0Y2QzE2NzQ3NDNBN2E4NzdlQjAiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY1NTkyMTY1Mzg5OCwibmFtZSI6Ik5GVCBUb29sYm94IERlbW8ifQ.sKGyyKdhvsfFhB399DNrHJtJcS5vLeAvWnAdAziuc3I";
+
+const test_specs = JSON.parse(
+	readFileSync(path.join(__dirname, "test_specs.json")).toString()
+);
+const TEST_NFT_STORAGE_KEY = test_specs.NFT_STORAGE_KEY;
+
 const TEST_BUFFER_FOR_IMAGE = Buffer.from([8, 6, 7, 5, 3, 0, 9]);
 
 const TEST_FAKE_DIR_STRUCTURE = {

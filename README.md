@@ -6,7 +6,6 @@ An npm package for seamless integration of all NFT related functionalities in We
 
 1.  Generate NFT Collection Images and Metadata files from Layer Images
 2.  Upload NFT Collection Assets and Metadata Files to IPFS (or alternative) Platforms via any of the following services:
-
     -   [NFT.storage](https://nft.storage/)
     -   [Pinata](https://www.pinata.cloud/)
     -   [Storj](https://landing.storj.io/permanently-pin-with-storj-dcs)
@@ -40,27 +39,31 @@ npm install
 
 4. You are ready to go!
 
-Run an example script
+To run an example script, update the required credentials in `examples/*.json` file and run
 
 ```
 ts-node examples/generate.ts
 ```
 
-Run Tests
+To run Tests, update the required credentials in `tests/test_specs.json` file and run
 
 ```
 npm test
 ```
+
 5. Editing Documentation
 
 Documentation has been generated using [Docusaurus](https://docusaurus.io/).
 
 The Docusaurus project is present in `documentation` directory. Install the dependencies
+
 ```
 cd documentation
 npm install
 ```
+
 Run the development live server for Documentation
+
 ```
 npm start
 ```

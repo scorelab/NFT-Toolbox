@@ -17,17 +17,19 @@ const TEST_FAKE_DIR_STRUCTURE = {
 	},
 };
 
+const test_specs = JSON.parse(
+	fs.readFileSync(path.join(__dirname, "test_specs.json")).toString()
+);
+
 const testCont = new Contract({
 	name: TEST_CONT_NAME,
 	symbol: TEST_CONT_NAME,
 	dir: TEST_CONT_PATH,
 	standard: "ERC721",
-	connection: JSON.parse(
-		fs.readFileSync(path.join(__dirname, "connection.json")).toString()
-	),
+	connection: test_specs.connection,
 	deployed: {
-		address: "0x5009278830fB58551bD518157cBb0002eB5DC80E",
-		abi: fs.readFileSync(path.join(__dirname, "abi.json")).toString(),
+		address: test_specs.connection,
+		abi: JSON.stringify(test_specs.abi),
 	},
 });
 
