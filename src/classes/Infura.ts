@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { FileStorage } from "./FileStorage";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const ndjsonParser = require("ndjson-parse");
 
 export class Infura extends FileStorage {
@@ -21,7 +22,7 @@ export class Infura extends FileStorage {
 
 	async uploadDirToService(dir: fs.PathLike): Promise<string> {
 		const files = fs.readdirSync(dir);
-		let formData = new FormData();
+		const formData = new FormData();
 		files.forEach((file) => {
 			const filepath = path.join(dir.toString(), file);
 			formData.append(`file`, fs.createReadStream(filepath), {
@@ -41,13 +42,14 @@ export class Infura extends FileStorage {
 
 		const responseArray = ndjsonParser(response.data);
 		const dirResponse = responseArray.find(
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			(res: any) => res.Name === dir.toString().split("\\").join("/")
 		);
 		return dirResponse.Hash;
 	}
 
 	async uploadFileToService(filepath: fs.PathLike): Promise<string> {
-		let formData = new FormData();
+		const formData = new FormData();
 		formData.append(`file`, fs.createReadStream(filepath));
 
 		// Execute the Upload request to the Infura IPFS pinning service
@@ -65,7 +67,7 @@ export class Infura extends FileStorage {
 
 	async uploadJSONToService(json: string): Promise<string> {
 		console.log("DEBUG", json, typeof json);
-		let formData = new FormData();
+		const formData = new FormData();
 		formData.append(`file`, json);
 
 		// Execute the Upload request to the Infura IPFS pinning service

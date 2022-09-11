@@ -4,7 +4,7 @@ import { filesFromPath } from "files-from-path";
 import { FileStorage } from "./FileStorage";
 
 export class NFTstorage extends FileStorage {
-	serviceBaseURL: string = "ipfs:/";
+	serviceBaseURL = "ipfs:/";
 	nftStorageClient: NFTStorage;
 
 	constructor(key: string) {

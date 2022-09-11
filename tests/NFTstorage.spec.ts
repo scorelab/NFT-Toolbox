@@ -62,7 +62,7 @@ describe("Test suite for Upload To NFTstorage API", () => {
 	});
 	it("Checking POST request in UploadDirToService", async function () {
 		const scope = nock("https://api.nft.storage")
-			.filteringPath((path) => "/")
+			.filteringPath(() => "/")
 			.post("/")
 			.reply(200, TEST_API_RESPONSE);
 
@@ -75,7 +75,7 @@ describe("Test suite for Upload To NFTstorage API", () => {
 
 	it("Checking POST request in UploadFileToService", async function () {
 		const scope = nock("https://api.nft.storage")
-			.filteringPath((path) => "/")
+			.filteringPath(() => "/")
 			.post("/")
 			.reply(200, TEST_API_RESPONSE);
 
@@ -88,7 +88,7 @@ describe("Test suite for Upload To NFTstorage API", () => {
 
 	it("Checking POST request in UploadJSONToService", async function () {
 		const scope = nock("https://api.nft.storage")
-			.filteringPath((path) => "/")
+			.filteringPath(() => "/")
 			.post("/")
 			.reply(200, TEST_API_RESPONSE);
 
@@ -112,8 +112,8 @@ describe("Test suite for Upload Method", () => {
 	});
 
 	it("Checking Internal UploadDirToService Calls", async function () {
-		var fake = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fake = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.value.cid;
 				resolve(cid);
 			})
@@ -126,14 +126,14 @@ describe("Test suite for Upload Method", () => {
 	});
 
 	it("Checking Internal UploadFileToService Calls", async function () {
-		var fakeFile = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeFile = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.value.cid;
 				resolve(cid);
 			})
 		);
-		var fakeJSON = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeJSON = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.value.cid;
 				resolve(cid);
 			})

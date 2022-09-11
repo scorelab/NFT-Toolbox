@@ -33,6 +33,7 @@ export abstract class FileStorage {
 
 	async uploadSingle(
 		asset: PathLike,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		metadata: any
 	): Promise<{ metadataCID: string; assetCID: string }> {
 		console.log("Uploading Asset...");

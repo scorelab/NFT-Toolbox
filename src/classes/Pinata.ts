@@ -3,21 +3,16 @@ import pinataSDK, { PinataClient } from "@pinata/sdk";
 import { FileStorage } from "./FileStorage";
 
 export class Pinata extends FileStorage {
-	serviceBaseURL: string = "ipfs:/";
+	serviceBaseURL = "ipfs:/";
 	pinataObj: PinataClient;
 
 	constructor(key: string, security: string) {
 		super();
 		this.pinataObj = pinataSDK(key, security);
-		this.pinataObj
-			.testAuthentication()
-			.then((result) => {
-				//console.log(result);
-			})
-			.catch((err) => {
-				console.error("Failed to initialize Pinata", err);
-				throw new Error("Pinata Initialization Failed");
-			});
+		this.pinataObj.testAuthentication().catch((err) => {
+			console.error("Failed to initialize Pinata", err);
+			throw new Error("Pinata Initialization Failed");
+		});
 	}
 
 	async uploadDirToService(dir: fs.PathLike): Promise<string> {

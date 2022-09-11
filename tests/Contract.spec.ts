@@ -1,6 +1,5 @@
 import { describe } from "mocha";
 import chai from "chai";
-import sinon from "sinon";
 import mock from "mock-fs";
 import fs from "fs";
 import path from "path";

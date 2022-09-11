@@ -8,7 +8,7 @@ export class ProgressBar {
 		this.title = title;
 		this.total = total;
 		this.current = 0;
-		var totLen = process.stdout.columns;
+		const totLen = process.stdout.columns;
 		this.bar_length = totLen - 40 - ((totLen - 40) % 10);
 	}
 

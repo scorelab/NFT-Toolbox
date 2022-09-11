@@ -37,6 +37,7 @@ class Toolbox {
 		username?: string;
 		password?: string;
 		currency?: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		wallet?: any;
 	}) {
 		switch (attr.service) {
@@ -45,7 +46,7 @@ class Toolbox {
 					throw new Error("Arweave Currency and Wallet required");
 				}
 				execSync(
-					"npm install @bundlr-network/client bignumber.js mime",
+					"npm install @bundlr-network/client bignumber.js mime @types/mime",
 					{ stdio: [0, 1, 2] }
 				);
 				this.fileStorageService = new Arweave(
@@ -121,6 +122,7 @@ class Toolbox {
 		return response;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async uploadSingleNFT(asset: PathLike, metadata: any) {
 		if (!this.fileStorageService) {
 			throw new Error("No File Storage Service is initialized");
@@ -150,6 +152,7 @@ class Toolbox {
 		this.contract.deploy();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async readContract(method: string, args: any[]) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
@@ -158,6 +161,7 @@ class Toolbox {
 		return res;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async writeContract(method: string, args: any[]) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
