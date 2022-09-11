@@ -64,7 +64,6 @@ export class Storj extends FileStorage {
 	}
 
 	async uploadJSONToService(json: string): Promise<string> {
-		console.log("DEBUG", json, typeof json);
 		let formData = new FormData();
 		formData.append(`file`, json);
 

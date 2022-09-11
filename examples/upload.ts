@@ -1,17 +1,10 @@
+import { readFileSync } from "fs";
 import path from "path";
 import { nftToolbox } from "../src/index";
 
-const accounts = {
-	PINATA_KEY: "PINATA_KEY",
-	PINATA_SECURITY: "PINATA_SECURITY",
-	NFT_STORAGE_KEY: "NFT_STORAGE_KEY",
-	STORJ_USERNAME: "username",
-	STORJ_PASSWORD: "password",
-	ARWEAVE_CURRENCY: "currency",
-	ARWEAVE_WALLET: "private_key",
-	INFURA_USERNAME: "username",
-	INFURA_PASSWORD: "password",
-};
+const account = JSON.parse(
+	readFileSync(path.join(__dirname, "account.json")).toString()
+);
 
 nftToolbox.initCollection({
 	name: "Demo Collection",
@@ -20,15 +13,15 @@ nftToolbox.initCollection({
 });
 
 const uploadCollectionExample = async function () {
-	const { assetCID, metadataCID } = await nftToolbox.uploadCollectionNFT();
-	console.log(assetCID, metadataCID);
+	const res = await nftToolbox.uploadCollectionNFT();
+	console.log(res);
 };
 
 const demoSingleNftImage = path.resolve(
 	__dirname,
 	"layers",
 	"background",
-	"grey.png"
+	"white.png"
 );
 const demoSingleNftMetadata = {
 	name: "Demo Single NFT",
@@ -48,38 +41,38 @@ const uploadSingleExample = async function () {
 	console.log(res);
 };
 
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////// Select ONE File Storage Platform ////////////////////////
 
 // nftToolbox.initFileStorageService({
 // 	service: "pinata",
-// 	key: accounts.PINATA_KEY,
-// 	secret: accounts.PINATA_SECURITY,
+// 	key: account.PINATA_KEY,
+// 	secret: account.PINATA_SECURITY,
 // });
 
 // nftToolbox.initFileStorageService({
 // 	service: "nft.storage",
-// 	key: accounts.NFT_STORAGE_KEY,
+// 	key: account.NFT_STORAGE_KEY,
 // });
 
 // nftToolbox.initFileStorageService({
 // 	service: "storj",
-// 	username: accounts.STORJ_USERNAME,
-// 	password: accounts.STORJ_PASSWORD,
+// 	username: account.STORJ_USERNAME,
+// 	password: account.STORJ_PASSWORD,
 // });
 
 // nftToolbox.initFileStorageService({
 // 	service: "arweave",
-// 	currency: accounts.ARWEAVE_CURRENCY,
-// 	wallet: accounts.ARWEAVE_WALLET,
+// 	currency: account.ARWEAVE_CURRENCY,
+// 	wallet: account.ARWEAVE_WALLET,
 // });
 
 // nftToolbox.initFileStorageService({
 // 	service: "infura",
-// 	username: accounts.INFURA_USERNAME,
-// 	password: accounts.INFURA_PASSWORD,
+// 	username: account.INFURA_USERNAME,
+// 	password: account.INFURA_PASSWORD,
 // });
 
-///////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 uploadCollectionExample();
 

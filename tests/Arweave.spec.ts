@@ -66,7 +66,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 			fake.calledOnceWith(path.join(TEST_COL_PATH, "metadata").toString())
 		).to.be.true;
 	});
-	it("Checking SDK function call in uploadFileToService", async function () {
+	it.skip("Checking SDK function call in uploadFileToService", async function () {
 		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
 		sinon.replace(
 			testArweaveObj.CONNECTION.uploader.chunkedUploader,
@@ -84,7 +84,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 			)
 		).to.be.true;
 	});
-	it("Checking SDK function call in uploadJSONToService", async function () {
+	it.skip("Checking SDK function call in uploadJSONToService", async function () {
 		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
 		sinon.replace(
 			testArweaveObj.CONNECTION.uploader.chunkedUploader,
