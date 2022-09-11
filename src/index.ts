@@ -44,9 +44,10 @@ class Toolbox {
 				if (!attr.wallet || !attr.currency) {
 					throw new Error("Arweave Currency and Wallet required");
 				}
-				execSync("npm install @bundlr-network/client bignumber.js", {
-					stdio: [0, 1, 2],
-				});
+				execSync(
+					"npm install @bundlr-network/client bignumber.js mime",
+					{ stdio: [0, 1, 2] }
+				);
 				this.fileStorageService = new Arweave(
 					attr.currency,
 					attr.wallet

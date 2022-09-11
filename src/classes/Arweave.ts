@@ -3,6 +3,7 @@ import Bundlr from "@bundlr-network/client";
 import { FileStorage } from "./FileStorage";
 import path from "path";
 const BigNumber = require("bignumber.js");
+const mime = require("mime");
 
 export class Arweave extends FileStorage {
 	serviceBaseURL = "ar:/";
@@ -58,8 +59,16 @@ export class Arweave extends FileStorage {
 		const data = fs.createReadStream(file);
 		this.fundBundlr(fs.statSync(file).size);
 
+		const transactionOptions = {
+			tags: [
+				{ name: "Content-Type", value: mime.getType(file.toString()) },
+			],
+		};
 		const response =
-			await this.CONNECTION.uploader.chunkedUploader.uploadData(data);
+			await this.CONNECTION.uploader.chunkedUploader.uploadData(
+				data,
+				transactionOptions
+			);
 		//returns the manifest ID if successful.
 
 		return response.data.id;
@@ -69,8 +78,14 @@ export class Arweave extends FileStorage {
 		const data = Buffer.from(json);
 		await this.fundBundlr(data.byteLength);
 
+		const transactionOptions = {
+			tags: [{ name: "Content-Type", value: "application/json" }],
+		};
 		const response =
-			await this.CONNECTION.uploader.chunkedUploader.uploadData(data);
+			await this.CONNECTION.uploader.chunkedUploader.uploadData(
+				data,
+				transactionOptions
+			);
 		//returns the manifest ID if successful.
 
 		return response.data.id;
