@@ -16,6 +16,12 @@ The following functionalities are currently supported :
 -   Deploying Smart Contracts to Ethereum compatible blockchain networks
 -   Interacting with Smart Contracts on Ethereum compatible blockchain networks
 
+## Workflows
+
+![Project Workflows](/workflows.png)
+
+## Installation and Usage
+
 ### Install the package
 
 Navigate to your [Node.js](https://nodejs.org/en/download/) project and run

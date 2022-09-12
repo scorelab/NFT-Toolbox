@@ -2,7 +2,7 @@
 
 An npm package for seamless integration of all NFT related functionalities in Web2 projects.
 
-### Supported Functionalities
+## Supported Functionalities
 
 1.  Generate NFT Collection Images and Metadata files from Layer Images
 2.  Upload NFT Collection Assets and Metadata Files to IPFS (or alternative) Platforms via any of the following services:
@@ -17,41 +17,45 @@ An npm package for seamless integration of all NFT related functionalities in We
     -   [Polygon](https://polygon.technology/): Mainnet, Mumbai
 5.  Mint NFTs on a Smart Contract deployed on any of the supported networks.
 
-### Development setup
+## Project Workflows
 
-1. Fork the `scorelab/NFT-Toolbox` repository
-   Follow these instructions on [how to fork a repository](https://help.github.com/en/articles/fork-a-repo)
+![Project Workflows](/workflows.png)
 
-2. Clone the repository
-   Navigate to the location on your computer where you want to host your code. Once in the appropriate folder, run the following command to clone the repository to your local machine.
+## Development setup
 
-```
-git clone https://github.com/ {your-username} /NFT-Toolbox.git
-```
+1.  Fork the `scorelab/NFT-Toolbox` repository
+    Follow these instructions on [how to fork a repository](https://help.github.com/en/articles/fork-a-repo)
 
-3. Install the dependencies
-   Setup the project with Node Package Manager.
+2.  Clone the repository
+    Navigate to the location on your computer where you want to host your code.
+    Once in the appropriate folder, run the following command to clone the repository to your local machine.
 
-```
-cd NFT-Toolbox
-npm install
-```
+    ```
+    git clone https://github.com/{your-username}/NFT-Toolbox.git
+    ```
 
-4. You are ready to go!
+3.  Install the dependencies, Setup the project with Node Package Manager.
 
-To run an example script, update the required credentials in `examples/*.json` file and run
+    ```
+    cd NFT-Toolbox
+    npm install
+    ```
 
-```
-ts-node examples/generate.ts
-```
+4.  You are ready to go!
 
-To run Tests, update the required credentials in `tests/test_specs.json` file and run
+    To run an example script, update the required credentials in `examples/*.json` file and run
 
-```
-npm test
-```
+    ```
+    ts-node examples/generate.ts
+    ```
 
-5. Editing Documentation
+    To run Tests, update the required credentials in `tests/test_specs.json` file and run
+
+    ```
+    npm test
+    ```
+
+## Documentation
 
 Documentation has been generated using [Docusaurus](https://docusaurus.io/).
 
