@@ -21,6 +21,24 @@ An npm package for seamless integration of all NFT related functionalities in We
 
 ![Project Workflows](/workflows.png)
 
+## Folder structure
+
+-   `/src` : Package source code
+    -   `/src/index.ts ` : Toolbox class, the single default export from the package
+    -   `/src/classes` : Core classes of the package that implement functionalities
+    -   `/src/helpers` : Helper classes that are used by core classes
+-   `/tests` : Tests for all core classes
+-   `/examples` : Example scripts for all functionalities
+-   `/docs` : Markdown documentation
+-   `/documentation` : Docusaurus project for documentation website
+
+## Contributor Guidelines
+
+-   This project is an NPM package. All dependencies must be installed with `npm install`.
+-   Dependencies for Upload functionality that are required based only in some cases based on user's specification are installed dynamically using [child-process](https://www.npmjs.com/package/child_process). They are included in dev-dependencies but not in dependencies. (For example @pinata/sdk).
+-   Mocha, Chai and Sinon have been used for testing. Run all tests with `npm test`.
+-   ESLint has been configured to lint for Typescript. Run linting with `npm run lint`.
+
 ## Development setup
 
 1.  Fork the `scorelab/NFT-Toolbox` repository
