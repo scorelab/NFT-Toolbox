@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import path from "path";
 import { nftToolbox } from "../src/index";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const account = JSON.parse(
 	readFileSync(path.join(__dirname, "account.json")).toString()
 );

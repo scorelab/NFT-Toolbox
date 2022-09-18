@@ -11,10 +11,13 @@ const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_ARWEAVE_CURRENCY = "arweave";
-const TEST_ARWEAVE_WALLET = JSON.parse(
-	readFileSync(path.join(__dirname, "wallet.json")).toString()
+
+const test_specs = JSON.parse(
+	readFileSync(path.join(__dirname, "test_specs.json")).toString()
 );
+const TEST_ARWEAVE_CURRENCY = test_specs.ARWEAVE_CURRENCY;
+const TEST_ARWEAVE_WALLET = test_specs.ARWEAVE_WALLET;
+
 const TEST_FAKE_DIR_STRUCTURE = {
 	fake_dir: {
 		"Demo Collection": {
@@ -47,7 +50,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 			createCwd: true,
 			createTmp: true,
 		});
-		var fakeFund = sinon.fake.resolves(null);
+		const fakeFund = sinon.fake.resolves(null);
 		sinon.replace(testArweaveObj, "fundBundlr", fakeFund);
 	});
 	afterEach(() => {
@@ -55,7 +58,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 		sinon.restore();
 	});
 	it("Checking SDK function call in uploadDirToService", async function () {
-		var fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		const fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
 		sinon.replace(testArweaveObj.CONNECTION.uploader, "uploadFolder", fake);
 
 		await testArweaveObj.uploadDirToService(
@@ -67,7 +70,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 		).to.be.true;
 	});
 	it.skip("Checking SDK function call in uploadFileToService", async function () {
-		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
+		const fake = sinon.fake.resolves(TEST_API_RESPONSE);
 		sinon.replace(
 			testArweaveObj.CONNECTION.uploader.chunkedUploader,
 			"uploadData",
@@ -85,7 +88,7 @@ describe("Test suite for Upload with Bundlr SDK", () => {
 		).to.be.true;
 	});
 	it.skip("Checking SDK function call in uploadJSONToService", async function () {
-		var fake = sinon.fake.resolves(TEST_API_RESPONSE);
+		const fake = sinon.fake.resolves(TEST_API_RESPONSE);
 		sinon.replace(
 			testArweaveObj.CONNECTION.uploader.chunkedUploader,
 			"uploadData",
@@ -121,7 +124,7 @@ describe("Test suite for Upload Method", () => {
 		mock.restore();
 	});
 	it("Checking Internal UploadDirToService Calls", async function () {
-		var fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		const fake = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
 		sinon.replace(testArweaveObj, "uploadDirToService", fake);
 
 		await testArweaveObj.uploadCollection(testCol);
@@ -129,8 +132,8 @@ describe("Test suite for Upload Method", () => {
 		expect(fake.calledTwice).to.be.true;
 	});
 	it("Checking Internal UploadFileToService and UploadJSONToService Calls", async function () {
-		var fakeFile = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
-		var fakeJSON = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		const fakeFile = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
+		const fakeJSON = sinon.fake.resolves(TEST_API_RESPONSE.data.id);
 		sinon.replace(testArweaveObj, "uploadFileToService", fakeFile);
 		sinon.replace(testArweaveObj, "uploadJSONToService", fakeJSON);
 

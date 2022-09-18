@@ -12,9 +12,12 @@ const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_PINATA_KEY = "c035310605551a107fb5";
-const TEST_PINATA_SECURITY =
-	"23bfd7200d9c4376738ee232bfc06baf533b2d53c75f524f6461d7f7d8fa25b6";
+
+const test_specs = JSON.parse(
+	readFileSync(path.join(__dirname, "test_specs.json")).toString()
+);
+const TEST_PINATA_KEY = test_specs.PINATA_KEY;
+const TEST_PINATA_SECURITY = test_specs.PINATA_SECURITY;
 
 const TEST_FAKE_DIR_STRUCTURE = {
 	fake_dir: {
@@ -105,8 +108,8 @@ describe("Test suite for Upload Methods", () => {
 	});
 
 	it("Checking Internal UploadDirToService Calls", async function () {
-		var fake = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fake = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.id;
 				resolve(cid);
 			})
@@ -119,14 +122,14 @@ describe("Test suite for Upload Methods", () => {
 	});
 
 	it("Checking Internal UploadFileToService Calls", async function () {
-		var fakeFile = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeFile = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.id;
 				resolve(cid);
 			})
 		);
-		var fakeJSON = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeJSON = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.id;
 				resolve(cid);
 			})

@@ -2,7 +2,8 @@ import fs from "fs";
 import Bundlr from "@bundlr-network/client";
 import { FileStorage } from "./FileStorage";
 import path from "path";
-const BigNumber = require("bignumber.js");
+import BigNumber from "bignumber.js";
+import mime from "mime";
 
 export class Arweave extends FileStorage {
 	serviceBaseURL = "ar:/";
@@ -10,6 +11,7 @@ export class Arweave extends FileStorage {
 	BUNDLR_URL = "https://node1.bundlr.network";
 	CONNECTION: Bundlr;
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	constructor(currency: string, wallet: any) {
 		super();
 		this.CONNECTION = new Bundlr(this.BUNDLR_URL, currency, wallet);
@@ -58,8 +60,17 @@ export class Arweave extends FileStorage {
 		const data = fs.createReadStream(file);
 		this.fundBundlr(fs.statSync(file).size);
 
+		const contentType: string | null = mime.getType(file.toString());
+		const transactionOptions = contentType
+			? {
+					tags: [{ name: "Content-Type", value: contentType }],
+			  }
+			: {};
 		const response =
-			await this.CONNECTION.uploader.chunkedUploader.uploadData(data);
+			await this.CONNECTION.uploader.chunkedUploader.uploadData(
+				data,
+				transactionOptions
+			);
 		//returns the manifest ID if successful.
 
 		return response.data.id;
@@ -69,8 +80,14 @@ export class Arweave extends FileStorage {
 		const data = Buffer.from(json);
 		await this.fundBundlr(data.byteLength);
 
+		const transactionOptions = {
+			tags: [{ name: "Content-Type", value: "application/json" }],
+		};
 		const response =
-			await this.CONNECTION.uploader.chunkedUploader.uploadData(data);
+			await this.CONNECTION.uploader.chunkedUploader.uploadData(
+				data,
+				transactionOptions
+			);
 		//returns the manifest ID if successful.
 
 		return response.data.id;

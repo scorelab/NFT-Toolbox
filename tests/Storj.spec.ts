@@ -12,8 +12,12 @@ const expect = chai.expect;
 
 const TEST_COL_NAME = "Demo Collection";
 const TEST_COL_PATH = path.join(process.cwd(), "fake_dir", "Demo Collection");
-const TEST_STORJ_USERNAME = "username";
-const TEST_STORJ_PASSWORD = "password";
+
+const test_specs = JSON.parse(
+	readFileSync(path.join(__dirname, "test_specs.json")).toString()
+);
+const TEST_STORJ_USERNAME = test_specs.STORJ_USERNAME;
+const TEST_STORJ_PASSWORD = test_specs.STORJ_USERNAME;
 
 const TEST_FAKE_DIR_STRUCTURE = {
 	fake_dir: {
@@ -127,8 +131,8 @@ describe("Test suite for Upload Method", () => {
 		mock.restore();
 	});
 	it("Checking Internal UploadDirToService Calls", async function () {
-		var fake = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fake = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.Hash;
 				resolve(cid);
 			})
@@ -141,14 +145,14 @@ describe("Test suite for Upload Method", () => {
 	});
 
 	it("Checking Internal UploadFileToService and UploadJSONToService Calls", async function () {
-		var fakeFile = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeFile = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.Hash;
 				resolve(cid);
 			})
 		);
-		var fakeJSON = sinon.fake.returns(
-			new Promise<string>(async (resolve) => {
+		const fakeJSON = sinon.fake.returns(
+			new Promise<string>((resolve) => {
 				const cid = TEST_API_RESPONSE.Hash;
 				resolve(cid);
 			})

@@ -2,6 +2,7 @@ import fs from "fs";
 import { erc721, erc1155 } from "@openzeppelin/wizard";
 import path from "path";
 import { ethers } from "ethers";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const solc = require("solc");
 
 type ercStandards = "ERC721" | "ERC1155";
@@ -195,6 +196,7 @@ export class Contract {
 	}
 
 	// Returns parsed object of ABI
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	compile(): any {
 		function findImports(importPath: string) {
 			if (importPath.startsWith("@openzeppelin"))
@@ -244,13 +246,14 @@ export class Contract {
 		);
 		console.log(`Deploying ${this.name}.sol`);
 		const contract = await cntFactory.deploy();
-		const receipt = await contract.deployTransaction.wait();
+		await contract.deployTransaction.wait();
 		console.log(`Contract Address : ${contract.address}`);
 		this.deployedInstance = contract;
 	}
 
 	async write(
 		method: string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		args: any[]
 	): Promise<ethers.providers.TransactionResponse> {
 		if (!this.deployedInstance) {
@@ -260,6 +263,7 @@ export class Contract {
 		return tx;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async read(method: string, args: any[]): Promise<any> {
 		if (!this.deployedInstance) {
 			throw new Error("Contract has not been deployed");

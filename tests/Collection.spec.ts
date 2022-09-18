@@ -34,14 +34,6 @@ const TEST_FAKE_DIR_STRUCTURE = {
 const TEST_LAYER_NOS = Object.keys(
 	TEST_FAKE_DIR_STRUCTURE.fake_dir.layers
 ).length;
-const TEST_LAYER_IMAGE_NOS = Object.keys(
-	TEST_FAKE_DIR_STRUCTURE.fake_dir.layers
-).reduce(
-	(sum, layer) =>
-		sum +
-		Object.keys(TEST_FAKE_DIR_STRUCTURE.fake_dir.layers[layer]).length,
-	0
-);
 
 const testSchema = {
 	dir: path.join(process.cwd(), "fake_dir", "layers"),
@@ -74,7 +66,7 @@ describe("Test suite for Schema Setter", () => {
 		mock.restore();
 	});
 	it("Checking File System calls", () => {
-		var spyReadDirElements = sinon.spy(testColObj, "readDirElements");
+		const spyReadDirElements = sinon.spy(testColObj, "readDirElements");
 		testColObj.setSchema(testSchema);
 		expect(spyReadDirElements.callCount).to.be.equal(TEST_LAYER_NOS);
 		expect(spyReadDirElements.returnValues).to.have.lengthOf(
@@ -104,15 +96,16 @@ describe("Test suite for Generate Method", () => {
 	});
 	it("Checking File System Calls", async function () {
 		this.timeout(10000);
-		var mockCol = sinon.mock(testColObj);
-		var expInitializeDir = mockCol.expects("initializeDir");
-		var expSaveImage = mockCol.expects("saveImage");
-		var expSaveMetadata = mockCol.expects("saveMetadata");
+		const mockCol = sinon.mock(testColObj);
+		const expInitializeDir = mockCol.expects("initializeDir");
+		const expSaveImage = mockCol.expects("saveImage");
+		const expSaveMetadata = mockCol.expects("saveMetadata");
 		expInitializeDir.exactly(1);
 		expSaveImage.exactly(TEST_SCHEMA_SIZE);
 		expSaveMetadata.exactly(TEST_SCHEMA_SIZE);
 
-		var fakeLoadImage = sinon.fake.returns(
+		const fakeLoadImage = sinon.fake.returns(
+			// eslint-disable-next-line no-async-promise-executor
 			new Promise<canvas.Image>(async (resolve) => {
 				const image = await canvas.loadImage(TEST_IMG);
 				resolve(image);

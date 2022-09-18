@@ -37,6 +37,7 @@ class Toolbox {
 		username?: string;
 		password?: string;
 		currency?: string;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		wallet?: any;
 	}) {
 		switch (attr.service) {
@@ -44,9 +45,10 @@ class Toolbox {
 				if (!attr.wallet || !attr.currency) {
 					throw new Error("Arweave Currency and Wallet required");
 				}
-				execSync("npm install @bundlr-network/client bignumber.js", {
-					stdio: [0, 1, 2],
-				});
+				execSync(
+					"npm install @bundlr-network/client bignumber.js mime @types/mime",
+					{ stdio: [0, 1, 2] }
+				);
 				this.fileStorageService = new Arweave(
 					attr.currency,
 					attr.wallet
@@ -103,7 +105,7 @@ class Toolbox {
 				break;
 
 			default:
-				throw new Error("Unknown IPFS Service");
+				throw new Error("Unknown File Storage Service");
 		}
 	}
 
@@ -112,7 +114,7 @@ class Toolbox {
 			throw new Error("No Collection is initialized");
 		}
 		if (!this.fileStorageService) {
-			throw new Error("No IPFS Service is initialized");
+			throw new Error("No File Storage Service is initialized");
 		}
 		const response = await this.fileStorageService.uploadCollection(
 			this.collection
@@ -120,9 +122,10 @@ class Toolbox {
 		return response;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async uploadSingleNFT(asset: PathLike, metadata: any) {
 		if (!this.fileStorageService) {
-			throw new Error("No IPFS Service is initialized");
+			throw new Error("No File Storage Service is initialized");
 		}
 		const response = await this.fileStorageService.uploadSingle(
 			asset,
@@ -149,6 +152,7 @@ class Toolbox {
 		this.contract.deploy();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async readContract(method: string, args: any[]) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
@@ -157,6 +161,7 @@ class Toolbox {
 		return res;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async writeContract(method: string, args: any[]) {
 		if (!this.contract) {
 			throw new Error("No Contract is initialized");
