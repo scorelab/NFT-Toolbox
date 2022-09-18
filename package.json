@@ -4,7 +4,8 @@
 	"description": "A non-fungible token (NFT) is a non-interchangeable unit of data stored on a blockchain, a form of digital ledger, that can be sold and traded. Each NFT has its own unique identity. Design NFT’s along with building a web3 dapp, that can mint NFTs.",
 	"main": "index.js",
 	"scripts": {
-		"test": "ts-mocha tests/*.spec.ts"
+		"test": "ts-mocha tests/*.spec.ts",
+		"lint": "eslint --ignore-path .eslintignore --ext .js,.ts ."
 	},
 	"repository": {
 		"type": "git",
@@ -17,21 +18,40 @@
 	},
 	"homepage": "https://github.com/scorelab/NFT-Toolbox#readme",
 	"devDependencies": {
+		"@bundlr-network/client": "^0.8.5",
+		"@pinata/sdk": "^1.1.26",
 		"@types/chai": "^4.3.1",
 		"@types/chai-as-promised": "^7.1.5",
+		"@types/mime": "^3.0.1",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "^17.0.42",
 		"@types/sinon": "^10.0.11",
+		"@typescript-eslint/eslint-plugin": "^5.36.2",
+		"@typescript-eslint/parser": "^5.36.2",
 		"chai": "^4.3.6",
+		"eslint": "^8.23.0",
+		"files-from-path": "^0.2.6",
+		"mime": "^3.0.0",
 		"mocha": "^10.0.0",
 		"mock-fs": "^5.1.2",
+		"ndjson-parse": "^1.0.4",
+		"nft.storage": "^6.4.1",
+		"nock": "^13.2.9",
 		"sinon": "^14.0.0",
 		"ts-mocha": "^10.0.0",
 		"typescript": "^4.7.3"
 	},
 	"dependencies": {
+		"@openzeppelin/contracts": "^4.7.1",
+		"@openzeppelin/wizard": "^0.1.1",
+		"axios": "^0.27.2",
+		"bignumber.js": "^9.1.0",
 		"canvas": "^2.9.1",
+		"child-process": "^1.0.2",
+		"ethers": "^5.6.9",
+		"form-data": "^4.0.0",
 		"fs": "^0.0.1-security",
-		"path": "^0.12.7"
+		"path": "^0.12.7",
+		"solc": "^0.8.15"
 	}
 }

@@ -54,16 +54,19 @@ interface MetadataAttribute {
 interface Metadata {
 	name: string;
 	description: string;
-	image: fs.PathLike;
+	image: string;
 	attributes: MetadataAttribute[];
 }
 
 export class Collection {
 	name: string;
 	dir: fs.PathLike;
-	description: string = "";
+	description = "";
 
-	baseURL: string = "ipfs:/";
+	baseURL = "";
+	assetsDirCID = "";
+	metadataDirCID = "";
+
 	extraMetadata: object = {};
 	schema?: LayerSchema = undefined;
 	layers?: Layer[] = undefined;
@@ -84,14 +87,15 @@ export class Collection {
 			fs.rmSync(this.dir, { recursive: true });
 		}
 		fs.mkdirSync(this.dir);
-		fs.mkdirSync(`${this.dir}/metadata`);
-		fs.mkdirSync(`${this.dir}/assets`);
+		fs.mkdirSync(path.join(this.dir.toString(), "assets"));
+		fs.mkdirSync(path.join(this.dir.toString(), "metadata"));
 	}
 	readDirElements(dir: fs.PathLike) {
 		return fs.readdirSync(dir);
 	}
 	async loadImage(element: LayerElement) {
 		try {
+			// eslint-disable-next-line no-async-promise-executor
 			return new Promise<canvas.Image>(async (resolve) => {
 				const image = await canvas.loadImage(element.path);
 				resolve(image);
@@ -102,13 +106,13 @@ export class Collection {
 	}
 	saveImage(_index: number, canvasInstance: canvas.Canvas) {
 		fs.writeFileSync(
-			`${this.dir}/assets/${_index}.png`,
+			path.join(this.dir.toString(), "assets", `${_index}.png`),
 			canvasInstance.toBuffer("image/png")
 		);
 	}
 	saveMetadata(metadata: Metadata, _index: number) {
 		fs.writeFileSync(
-			`${this.dir}/metadata/${_index}.json`,
+			path.join(this.dir.toString(), "metadata", `${_index}.json`),
 			JSON.stringify(metadata, null, 2)
 		);
 	}
@@ -116,6 +120,12 @@ export class Collection {
 	// Setters
 	setBaseURL(url: string) {
 		this.baseURL = url;
+	}
+	setAssetsDirCID(cid: string) {
+		this.assetsDirCID = cid;
+	}
+	setMetadataDirCID(cid: string) {
+		this.metadataDirCID = cid;
 	}
 	setExtraMetadata(data: object) {
 		this.extraMetadata = data;
@@ -126,12 +136,12 @@ export class Collection {
 			// Functions for extracting name and rarity weight from file name
 			// File name is of the form "{name} rarityDelimiter {rarityWeight} . {extension}"
 			const cleanName = (str: string) =>
-				str.split(".").shift()?.split(rarityDelimiter).shift();
+				path.parse(str).name.split(rarityDelimiter).shift();
 			const rarityWeight = (str: string) =>
-				str.split(".").shift()?.split(rarityDelimiter).pop();
+				path.parse(str).name.split(rarityDelimiter).pop();
 
 			return this.readDirElements(dir)
-				.filter((item) => !/(^|\/)\.[^\/\.]/g.test(item))
+				.filter((item) => !/(^|\/)\.[^/.]/g.test(item))
 				.map((i, index) => {
 					//Parsing File name
 					if (i.includes(DNA_DELIMITER)) {
@@ -139,11 +149,11 @@ export class Collection {
 							`File name can not contain "${DNA_DELIMITER}", please fix: ${i}`
 						);
 					}
-					let eleName = cleanName(i);
+					const eleName = cleanName(i);
 					if (!eleName) {
 						throw new Error(`Error in loading File ${i}`);
 					}
-					let eleWeight = i.includes(schema.rarityDelimiter)
+					const eleWeight = i.includes(schema.rarityDelimiter)
 						? rarityWeight(i)
 						: schema.rarityDefault;
 					if (!eleWeight) {
@@ -151,7 +161,7 @@ export class Collection {
 					}
 
 					// Creating Element
-					let element: LayerElement = {
+					const element: LayerElement = {
 						id: index,
 						name: eleName,
 						filename: i,
@@ -163,11 +173,11 @@ export class Collection {
 		};
 		// Creating Layers array
 		const layers: Layer[] = schema.layersOrder.map((layerObj, index) => {
-			let dir = layerObj.dir
+			const dir = layerObj.dir
 				? layerObj.dir
 				: path.join(schema.dir.toString(), layerObj.name);
-			let elements = getElements(dir, schema.rarityDelimiter);
-			var totalWeight: number = 0;
+			const elements = getElements(dir, schema.rarityDelimiter);
+			let totalWeight = 0;
 			elements.forEach((element) => {
 				totalWeight += element.weight;
 			});
@@ -193,10 +203,10 @@ export class Collection {
 		// Helper Functions for generation
 		// Creates a random DNA of element indexes based on rarity weights
 		const createDna = (layers: Layer[]) => {
-			let randomElementIds: number[] = [];
+			const randomElementIds: number[] = [];
 			layers.forEach((layer) => {
-				let random = Math.random() * layer.totalWeight;
-				for (var i = 0, sum = 0; i < layer.elements.length; i++) {
+				const random = Math.random() * layer.totalWeight;
+				for (let i = 0, sum = 0; i < layer.elements.length; i++) {
 					sum += layer.elements[i].weight;
 					if (sum >= random) {
 						randomElementIds.push(layer.elements[i].id);
@@ -214,8 +224,8 @@ export class Collection {
 
 		// Selects elements for each layer based on DNA
 		const selectElements = (_dna: string, _layers: Layer[]) => {
-			let mappedDnaToLayers = _layers.map((layer, index) => {
-				let selectedElement: LayerElement | undefined =
+			const mappedDnaToLayers = _layers.map((layer, index) => {
+				const selectedElement: LayerElement | undefined =
 					layer.elements.find(
 						(e) =>
 							e.id.toString() == _dna.split(DNA_DELIMITER)[index]
@@ -230,10 +240,10 @@ export class Collection {
 
 		// Returns metadata in OpenSea format to matadataList variable
 		const getMetadata = (_index: number) => {
-			let tempMetadata: Metadata = {
+			const tempMetadata: Metadata = {
 				name: `${this.name} #${_index}`,
 				description: this.description,
-				image: `${this.baseURL}/${_index}.png`,
+				image: `${this.baseURL}/${this.assetsDirCID}/${_index}.png`,
 				attributes: attributesList, // Dynamic list maintained in the Generation Loop
 				...this.extraMetadata,
 			};
@@ -243,7 +253,7 @@ export class Collection {
 		// Shuffle integer array with Fisher-Yates Algorithm
 		const shuffle = (array: number[]) => {
 			for (let i = array.length - 1; i > 0; i--) {
-				let j = Math.floor(Math.random() * (i + 1));
+				const j = Math.floor(Math.random() * (i + 1));
 				[array[i], array[j]] = [array[j], array[i]];
 			}
 		};
@@ -251,9 +261,9 @@ export class Collection {
 		// Initializations
 		this.initializeDir();
 
-		let indexCount: number = 1;
-		let failedCount: number = 0;
-		let abstractedIndexes: number[] = []; // Ordered array of indexes to be created
+		let indexCount = 1;
+		let failedCount = 0;
+		const abstractedIndexes: number[] = []; // Ordered array of indexes to be created
 
 		for (let i = 1; i <= this.schema.size; i++) {
 			abstractedIndexes.push(i);
@@ -275,22 +285,22 @@ export class Collection {
 		const ctx = canvasInstance.getContext("2d");
 		ctx.imageSmoothingEnabled = this.schema.format.smoothing;
 
-		var dnaList = new Set<string>(); // List of all DNAs created so far
-		var attributesList: MetadataAttribute[] = []; // List of attributes added to an NFT, cleared in every iteration
+		const dnaList = new Set<string>(); // List of all DNAs created so far
+		let attributesList: MetadataAttribute[] = []; // List of attributes added to an NFT, cleared in every iteration
 
 		// Generation Loop
 		while (indexCount <= this.schema.size) {
 			// Creating new DNA
-			let newDna = createDna(this.layers);
+			const newDna = createDna(this.layers);
 
 			// Creating NFT for DNA, if not done already
 			if (isDnaUnique(dnaList, newDna)) {
 				// Loading Elements
-				let selectedElements: LayerElement[] = selectElements(
+				const selectedElements: LayerElement[] = selectElements(
 					newDna,
 					this.layers
 				);
-				let loadedImages: Promise<canvas.Image | undefined>[] = [];
+				const loadedImages: Promise<canvas.Image | undefined>[] = [];
 				selectedElements.forEach((element) => {
 					loadedImages.push(this.loadImage(element));
 				});
@@ -355,7 +365,7 @@ export class Collection {
 
 					// Saving NFT image and Metadata
 					this.saveImage(abstractedIndexes[0], canvasInstance);
-					let meta = getMetadata(abstractedIndexes[0]);
+					const meta = getMetadata(abstractedIndexes[0]);
 					this.saveMetadata(meta, abstractedIndexes[0]);
 				});
 
@@ -379,5 +389,26 @@ export class Collection {
 		console.log(
 			`\n${this.schema.size} NFTs generated for ${this.name} in ${this.dir}`
 		);
+	}
+
+	updateMetadataWithCID() {
+		const metadataDir = path.join(this.dir.toString(), "metadata");
+		const files = fs.readdirSync(metadataDir);
+		if ((files && files.length) <= 0) {
+			console.log(
+				`No Metadata files were found in folder '${metadataDir}'`
+			);
+			return;
+		}
+
+		files.forEach((fileName) => {
+			const filePath = path.join(metadataDir, fileName);
+			const file_content = fs.readFileSync(filePath);
+			const content = JSON.parse(file_content.toString());
+			content.image = `${this.baseURL}/${this.assetsDirCID}/${
+				path.parse(fileName).name
+			}.png`;
+			fs.writeFileSync(filePath, JSON.stringify(content, null, 2));
+		});
 	}
 }
