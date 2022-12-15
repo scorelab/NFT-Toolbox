@@ -12,9 +12,9 @@ An npm package for seamless integration of all NFT related functionalities in We
     -   [Infura](https://infura.io/product/ipfs)
     -   [Arweave](https://www.arweave.org/)
 3.  Draft ERC721/ERC1155 Smart Contracts from scratch with [Open Zeppelin Wizard](https://github.com/OpenZeppelin/contracts-wizard)
-4.  Deploy a Smart Contract to blockchain. Mainnets and Testnets of the following are supported are supported.
-    -   [Ethereum](https://ethereum.org/): Mainnet, Ropsten, Rinkeby, Goerli, Kovan
-    -   [Polygon](https://polygon.technology/): Mainnet, Mumbai
+4.  Deploy a Smart Contract to blockchain. Mainnets and Testnets of the following are supported:
+    -   [Ethereum](https://ethereum.org/): Mainnet and Goerli
+    -   [Polygon](https://polygon.technology/): Mainnet and Mumbai
 5.  Mint NFTs on a Smart Contract deployed on any of the supported networks.
 
 ## Project Workflows
