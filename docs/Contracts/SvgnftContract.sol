@@ -14,14 +14,14 @@ contract SvgNft is ERC721, Ownable {
     string private s_ImageURI;
 
     mapping(uint256 => int256) private s_tokenIdToHighValues;
-    event CreatedNFT(uint256 indexed tokenId, int256 highValue);
+    event CreatedNFT(uint256 indexed tokenId);
 
     constructor(string memory Svg) ERC721("Dynamic SVG NFT", "DSN") {
         s_tokenCounter = 0;
         s_ImageURI = svgToImageURI(Svg);
     }
 
-    function safeMintNFT(int256 highValue) public {
+    function safeMintNFT() public {
         _safeMint(msg.sender, s_tokenCounter);
         s_tokenCounter = s_tokenCounter + 1;
         emit CreatedNFT(s_tokenCounter, highValue);
