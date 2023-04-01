@@ -23,7 +23,7 @@ const demoMintNFT = async () => {
 	console.log("Balance: ", bal.toString());
 
 	console.log("Minting New Token");
-	const tx = await nftToolbox.writeContract("safeMint", [address]);
+	const tx = await nftToolbox.writeContract("safeMintNFT", [address]);
 	await tx.wait();
 
 	bal = await nftToolbox.readContract("balanceOf", [address]);
