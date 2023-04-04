@@ -67,7 +67,11 @@ An npm package for seamless integration of all NFT related functionalities in We
     ts-node examples/generate.ts
     ```
 
-    To run Tests, update the required credentials in `tests/test_specs.json` file and run
+    To run Tests, update the required credentials in `tests/test_specs.json` file
+    
+    Note:-  Inorder to find the accepted Currencies by bundler please check here - https://docs.bundlr.network/sdk/using-other-currencies
+    
+    and when all the configs are set you can run
 
     ```
     npm test
