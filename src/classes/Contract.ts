@@ -166,6 +166,11 @@ export class Contract {
 		if (!fs.existsSync(this.dir)) {
 			fs.mkdirSync(this.dir);
 		}
+		let addMintBatch = '';
+		if (contractCode.includes('mint(address')){
+		addMintBatch = function mintBatch(address[] memory to, uint256[] memory tokenIds) public { for(uint256 i = 0; i < to.length; i++) { mint(to[i], tokenIds[i]); } }
+		}
+		contractCode = ${contractCode}\n${addMintBatch};
 		fs.writeFileSync(
 			path.join(this.dir.toString(), `${this.name}.sol`),
 			contractCode,
