@@ -24,7 +24,7 @@ interface ERC721Options {
     uriStorage?: boolean;
     burnable?: boolean;
     pausable?: boolean;
-    mintable?: boolean;
+    mintable?: boolean | 'batch';
     incremental?: boolean;
     votes?: boolean;
 }
@@ -34,7 +34,7 @@ interface ERC1155Options {
     uri: string;
     burnable?: boolean;
     pausable?: boolean;
-    mintable?: boolean;
+    mintable?: boolean | 'batch';
     supply?: boolean;
     updatableUri?: boolean;
 }
