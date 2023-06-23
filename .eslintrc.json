@@ -15,3 +15,5 @@
 		"no-mixed-spaces-and-tabs": 0
 	}
 }
+
+// npx eslint init

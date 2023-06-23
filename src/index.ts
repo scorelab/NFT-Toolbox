@@ -1,13 +1,13 @@
 import { PathLike } from "fs";
 import { Collection, LayerSchema } from "./classes/Collection";
-import { Contract, ContractAttributes, DraftOptions } from "./classes/Contract";
-import { FileStorage } from "./classes/FileStorage";
+import { Contract, ContractAttributes, DraftOptions } from "./classes/Chains/Ethereum";
+import { FileStorage } from "./classes/FileStorage/FileStorage";
 import { execSync } from "child_process";
-import { Arweave } from "./classes/Arweave";
-import { Infura } from "./classes/Infura";
-import { Storj } from "./classes/Storj";
-import { NFTstorage } from "./classes/NFTstorage";
-import { Pinata } from "./classes/Pinata";
+import { Arweave } from "./classes/FileStorage/Arweave";
+import { Infura } from "./classes/FileStorage/Infura";
+import { Storj } from "./classes/FileStorage/Storj";
+import { NFTstorage } from "./classes/FileStorage/NFTstorage";
+import { Pinata } from "./classes/FileStorage/Pinata";
 
 class Toolbox {
 	private collection: Collection | undefined = undefined;
