@@ -1,6 +1,6 @@
 import { PathLike } from "fs";
 import path from "path";
-import { Collection } from "./Collection";
+import { Collection } from "../../examples/chains/Ethereum/contracts/EthereumCollection";
 
 export abstract class FileStorage {
 	abstract serviceBaseURL: string;

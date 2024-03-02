@@ -1,6 +1,6 @@
 import { PathLike } from "fs";
-import { Collection, LayerSchema } from "./classes/Collection";
-import { Contract, ContractAttributes, DraftOptions } from "./classes/Contract";
+import { Collection, LayerSchema } from "../examples/chains/Ethereum/contracts/EthereumCollection";
+import { Contract, ContractAttributes, DraftOptions } from "../examples/chains/Ethereum/contracts/EthereumContract";
 import { FileStorage } from "./classes/FileStorage";
 import { execSync } from "child_process";
 import { Arweave } from "./classes/Arweave";
