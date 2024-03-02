@@ -1,6 +1,9 @@
 import { PathLike } from "fs";
 import path from "path";
 import { Collection } from "./Collection";
+import { Web3Stash } from 'web3stash'; 
+
+const web3Stash = new Web3Stash();
 
 export abstract class FileStorage {
 	abstract serviceBaseURL: string;
