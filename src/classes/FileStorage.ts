@@ -23,6 +23,10 @@ export abstract class FileStorage {
     const jsonCID = await web3Stash.uploadJSON(json);
     return jsonCID;
   }
+
+  protected abstract readDirectory(dir: PathLike): any;
+	protected abstract readFile(file: PathLike): any;
+
   async uploadCollection(
     collection: Collection
   ): Promise<{ metadataCID: string; assetCID: string }> {
