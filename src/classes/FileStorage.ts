@@ -1,53 +1,65 @@
 import { PathLike } from "fs";
 import path from "path";
 import { Collection } from "./Collection";
-import { Web3Stash } from 'web3stash'; 
+import { Web3Stash } from "web3stash";
 
 const web3Stash = new Web3Stash();
 
 export abstract class FileStorage {
-	abstract serviceBaseURL: string;
-	abstract uploadDirToService(dir: PathLike): Promise<string>;
-	abstract uploadFileToService(file: PathLike): Promise<string>;
-	abstract uploadJSONToService(json: string): Promise<string>;
+  abstract serviceBaseURL: string;
+  async uploadDirToService(dir: PathLike): Promise<string> {
+    const directoryData = this.readDirectory(dir);
+    const directoryCID = await web3Stash.uploadDirectory(directoryData);
+    return directoryCID;
+  }
 
-	async uploadCollection(
-		collection: Collection
-	): Promise<{ metadataCID: string; assetCID: string }> {
-		console.log("Uploading Assets...");
-		const ImageFolderCID = await this.uploadDirToService(
-			path.join(collection.dir.toString(), "assets")
-		);
+  async uploadFileToService(file: PathLike): Promise<string> {
+    const fileData = this.readFile(file);
+    const fileCID = await web3Stash.uploadFile(fileData);
+    return fileCID;
+  }
 
-		collection.setBaseURL(this.serviceBaseURL);
-		collection.setAssetsDirCID(ImageFolderCID);
-		collection.updateMetadataWithCID();
+  async uploadJSONToService(json: string): Promise<string> {
+    const jsonCID = await web3Stash.uploadJSON(json);
+    return jsonCID;
+  }
+  async uploadCollection(
+    collection: Collection
+  ): Promise<{ metadataCID: string; assetCID: string }> {
+    console.log("Uploading Assets...");
+    const ImageFolderCID = await this.uploadDirToService(
+      path.join(collection.dir.toString(), "assets")
+    );
 
-		console.log("Uploading Metadata...");
-		const MetaFolderCID = await this.uploadDirToService(
-			path.join(collection.dir.toString(), "metadata")
-		);
+    collection.setBaseURL(this.serviceBaseURL);
+    collection.setAssetsDirCID(ImageFolderCID);
+    collection.updateMetadataWithCID();
 
-		collection.setMetadataDirCID(MetaFolderCID);
+    console.log("Uploading Metadata...");
+    const MetaFolderCID = await this.uploadDirToService(
+      path.join(collection.dir.toString(), "metadata")
+    );
 
-		console.log("Upload Complete");
-		return { metadataCID: MetaFolderCID, assetCID: ImageFolderCID };
-	}
+    collection.setMetadataDirCID(MetaFolderCID);
 
-	async uploadSingle(
-		asset: PathLike,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		metadata: any
-	): Promise<{ metadataCID: string; assetCID: string }> {
-		console.log("Uploading Asset...");
-		const assetCID = await this.uploadFileToService(asset);
+    console.log("Upload Complete");
+    return { metadataCID: MetaFolderCID, assetCID: ImageFolderCID };
+  }
 
-		metadata.image = `${this.serviceBaseURL}/${assetCID}`;
-		console.log("Uploading Metadata...");
-		const metadataCID = await this.uploadJSONToService(
-			JSON.stringify(metadata)
-		);
-		console.log("Upload Complete");
-		return { metadataCID, assetCID };
-	}
+  async uploadSingle(
+    asset: PathLike,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    metadata: any
+  ): Promise<{ metadataCID: string; assetCID: string }> {
+    console.log("Uploading Asset...");
+    const assetCID = await this.uploadFileToService(asset);
+
+    metadata.image = `${this.serviceBaseURL}/${assetCID}`;
+    console.log("Uploading Metadata...");
+    const metadataCID = await this.uploadJSONToService(
+      JSON.stringify(metadata)
+    );
+    console.log("Upload Complete");
+    return { metadataCID, assetCID };
+  }
 }
