@@ -1,3 +1,5 @@
+# Note: This Project Repository has been moved to https://github.com/c2siorg/NFT-Toolbox.
+
 # NFT-Toolbox
 
 An npm package for seamless integration of all NFT related functionalities in Web2 projects.
