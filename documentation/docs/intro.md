@@ -18,7 +18,7 @@ The following functionalities are currently supported :
 
 ## Workflows
 
-![Project Workflows](/workflows.png)
+![Project Workflows](/img/workflows.png)
 
 ## Installation and Usage
 
