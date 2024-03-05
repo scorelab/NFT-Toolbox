@@ -18,12 +18,13 @@ The following functionalities are currently supported :
 
 ## Workflows
 
-![Project Workflows](/workflows.png)
+![Project Workflows](./../static/img/workflows.png)
 
 ## Installation and Usage
 
 ### Install the package
 
+<!-- Here I changed to the correct path -->
 Navigate to your [Node.js](https://nodejs.org/en/download/) project and run
 
 ```bash
