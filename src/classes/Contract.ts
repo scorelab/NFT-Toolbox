@@ -24,7 +24,7 @@ interface ERC721Options {
     uriStorage?: boolean;
     burnable?: boolean;
     pausable?: boolean;
-    mintable?: boolean;
+    mintable?: boolean | 'batch';
     incremental?: boolean;
     votes?: boolean;
 }
@@ -34,7 +34,7 @@ interface ERC1155Options {
     uri: string;
     burnable?: boolean;
     pausable?: boolean;
-    mintable?: boolean;
+    mintable?: boolean | 'batch';
     supply?: boolean;
     updatableUri?: boolean;
 }
@@ -166,6 +166,11 @@ export class Contract {
 		if (!fs.existsSync(this.dir)) {
 			fs.mkdirSync(this.dir);
 		}
+		let addMintBatch = '';
+		if (contractCode.includes('mint(address')){
+		addMintBatch = function mintBatch(address[] memory to, uint256[] memory tokenIds) public { for(uint256 i = 0; i < to.length; i++) { mint(to[i], tokenIds[i]); } }
+		}
+		contractCode = ${contractCode}\n${addMintBatch};
 		fs.writeFileSync(
 			path.join(this.dir.toString(), `${this.name}.sol`),
 			contractCode,
