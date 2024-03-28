@@ -52,7 +52,7 @@ const config = {
 				title: "NFT Toolbox",
 				logo: {
 					alt: "NFT Toolbox Logo",
-					src: "img/logo.svg",
+					src: "img/main-logo.png",
 				},
 				items: [
 					{
